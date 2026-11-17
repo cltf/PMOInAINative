@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>前言 · AI组织项目管理升级</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,650&family=IBM+Plex+Mono:wght@400;500&family=Noto+Sans+SC:wght@400;500;700&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+:root {
+  --ha-bg: #f5f7fa;
+  --ha-sidebar: #f5f7fa;
+  --ha-ink: #0f1c2e;
+  --ha-muted: #6b7a8d;
+  --ha-line: #dde3eb;
+  --ha-active-bg: #e8eef5;
+  --ha-accent: #f5a623;
+  --ha-accent-ink: #1c1c1a;
+}
+body.hermes-book {
+  background: var(--ha-bg) !important;
+  color: var(--ha-ink);
+  font-size: 17px;
+  line-height: 1.75;
+}
+body.hermes-book a { color: #9a5b00; }
+body.hermes-book a:hover { color: var(--ha-ink); }
+.ha-shell {
+  display: grid;
+  grid-template-columns: 270px minmax(0, 1fr);
+  min-height: 100vh;
+}
+.ha-sidebar {
+  position: sticky;
+  top: 0;
+  align-self: start;
+  height: 100vh;
+  overflow-y: auto;
+  padding: 1.25rem 1rem 1.5rem;
+  border-right: 1px solid var(--ha-line);
+  background: var(--ha-sidebar);
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+.ha-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: var(--ha-muted) !important;
+  text-decoration: none;
+  font-size: 0.88rem;
+}
+.ha-back:hover { color: var(--ha-ink) !important; }
+.ha-toc-label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--ha-muted);
+  letter-spacing: 0.06em;
+  margin: 0.35rem 0 0.15rem;
+}
+.ha-chapters {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+.ha-chapters > li {
+  border-radius: 10px;
+}
+.ha-chapters .chap-toggle {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.35rem;
+  width: 100%;
+  padding: 0.55rem 0.7rem;
+  border: 0;
+  border-radius: 10px;
+  border-left: 3px solid transparent;
+  background: transparent;
+  color: var(--ha-muted);
+  font: inherit;
+  font-size: 0.9rem;
+  line-height: 1.35;
+  text-align: left;
+  cursor: pointer;
+}
+.ha-chapters .chap-toggle:hover {
+  background: rgba(15,28,46,0.04);
+  color: var(--ha-ink);
+}
+.ha-chapters > li.open > .chap-toggle,
+.ha-chapters > li.active > .chap-toggle {
+  background: var(--ha-active-bg);
+  color: var(--ha-ink);
+  font-weight: 600;
+  border-left-color: var(--ha-accent);
+}
+.ha-chapters .chap-caret {
+  flex: 0 0 auto;
+  width: 0.9rem;
+  margin-top: 0.15rem;
+  color: inherit;
+  opacity: 0.7;
+  transition: transform 0.15s ease;
+}
+.ha-chapters > li.open > .chap-toggle .chap-caret {
+  transform: rotate(90deg);
+}
+.ha-chapters .chap-subs {
+  list-style: none;
+  margin: 0 0 0.35rem;
+  padding: 0 0.4rem 0.25rem 1.35rem;
+  display: none;
+}
+.ha-chapters > li.open > .chap-subs {
+  display: grid;
+  gap: 0.12rem;
+}
+.ha-chapters .chap-subs a {
+  display: block;
+  padding: 0.32rem 0.55rem;
+  border-radius: 8px;
+  text-decoration: none;
+  color: var(--ha-muted);
+  font-size: 0.82rem;
+  line-height: 1.35;
+}
+.ha-chapters .chap-subs a:hover {
+  background: rgba(15,28,46,0.04);
+  color: var(--ha-ink);
+}
+.ha-chapters .chap-subs a.active {
+  color: var(--ha-ink);
+  font-weight: 600;
+  background: rgba(31,111,235,0.08);
+}
+.ha-side-foot {
+  margin-top: auto;
+  padding-top: 1rem;
+  border-top: 1px solid var(--ha-line);
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+.ha-side-foot a {
+  color: var(--ha-muted);
+  text-decoration: none;
+  font-size: 0.88rem;
+}
+.ha-side-foot a:hover { color: var(--ha-ink); }
+.ha-main {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+.ha-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.95rem 2rem;
+  border-bottom: 1px solid var(--ha-line);
+  background: rgba(245,247,250,0.92);
+  backdrop-filter: blur(8px);
+  position: sticky;
+  top: 0;
+  z-index: 5;
+}
+.ha-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  text-decoration: none;
+  color: var(--ha-ink);
+  font-weight: 650;
+  font-size: 0.98rem;
+  letter-spacing: -0.02em;
+}
+.ha-brand-mark {
+  width: 1.55rem;
+  height: 1.55rem;
+  border-radius: 6px;
+  background: #0f1c2e;
+  color: #fff;
+  display: grid;
+  place-items: center;
+  font-size: 0.62rem;
+  font-weight: 700;
+  font-family: var(--font-mono);
+}
+.ha-top-links {
+  display: flex;
+  gap: 1.1rem;
+  flex-wrap: wrap;
+}
+.ha-top-links a {
+  color: var(--ha-muted);
+  text-decoration: none;
+  font-size: 0.9rem;
+}
+.ha-top-links a:hover { color: var(--ha-ink); }
+.ha-article {
+  width: min(760px, calc(100% - 3rem));
+  margin: 0 auto;
+  padding: 1.75rem 0 4rem;
+}
+.ha-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  color: var(--ha-muted);
+  font-size: 0.88rem;
+  margin-bottom: 1.25rem;
+}
+.ha-meta a { color: inherit; text-decoration: none; }
+.ha-meta a:hover { color: var(--ha-ink); }
+.ha-chapter-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.9rem;
+  margin-bottom: 1.5rem;
+}
+.ha-chapter-num {
+  flex: 0 0 auto;
+  min-width: 2.4rem;
+  height: 2.4rem;
+  padding: 0 0.55rem;
+  border-radius: 8px;
+  background: var(--ha-accent);
+  color: var(--ha-accent-ink);
+  display: grid;
+  place-items: center;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+.ha-chapter-head h1 {
+  margin: 0;
+  font-size: clamp(1.55rem, 3vw, 2.15rem);
+  border: none;
+  padding: 0;
+  letter-spacing: -0.03em;
+}
+.ha-section-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.05rem;
+}
+.ha-section-list a {
+  display: block;
+  padding: 0.35rem 0.55rem;
+  border-radius: 8px;
+  text-decoration: none;
+  color: var(--ha-muted);
+  font-size: 0.82rem;
+  line-height: 1.35;
+}
+.ha-section-list a:hover {
+  background: rgba(15,28,46,0.04);
+  color: var(--ha-ink);
+}
+.ha-content h2 {
+  border-top: none;
+  padding-top: 0.2rem;
+  margin-top: 2.2rem;
+}
+.ha-content h2::before {
+  content: "";
+  display: block;
+  width: 2rem;
+  height: 3px;
+  background: var(--ha-accent);
+  margin-bottom: 0.75rem;
+  border-radius: 2px;
+}
+.ha-content p { margin: 0 0 1rem; text-indent: 2em; }
+.ha-sec-box {
+  margin: 0 0 1.75rem;
+  padding: 1rem 1.15rem 1.05rem;
+  border-radius: 12px;
+  background: #fff;
+  border: 1px solid var(--ha-line);
+}
+.ha-sec-box .label {
+  margin: 0 0 0.55rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--ha-muted);
+  letter-spacing: 0.04em;
+}
+.ha-sec-box ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.35rem;
+}
+.ha-sec-box a {
+  text-decoration: none;
+  color: var(--ha-ink);
+  font-size: 0.95rem;
+}
+.ha-sec-box a:hover { color: #1554b5; }
+.book-block {
+  margin: 0 0 1rem;
+  padding: 1rem 1.1rem 1.05rem;
+  border-radius: 12px;
+  background: #fff;
+  border: 1px solid var(--ha-line);
+}
+.book-block h2 {
+  margin: 0 0 0.55rem;
+  font-size: 1.05rem;
+  border: none;
+  padding: 0;
+  display: flex;
+  gap: 0.65rem;
+  align-items: baseline;
+}
+.book-block h2 a { text-decoration: none; color: var(--ha-ink); }
+.book-block h2 .num {
+  display: inline-grid;
+  place-items: center;
+  width: 1.85rem;
+  height: 1.85rem;
+  border-radius: 7px;
+  background: var(--ha-accent);
+  color: var(--ha-accent-ink);
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+.book-block ul.secs {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  color: #3a4652;
+  font-size: 0.92rem;
+  display: grid;
+  gap: 0.28rem;
+}
+.book-block ul.secs a { text-decoration: none; color: #3a4652; }
+.book-block ul.secs a:hover { color: #1554b5; }
+.figcap { color: var(--ha-muted); font-size: 0.9rem; text-align: center; margin: 0.25rem 0 1rem; }
+.table-wrap { overflow-x: auto; margin: 1rem 0; }
+.table-wrap table { width: 100%; border-collapse: collapse; font-size: 0.92rem; }
+.table-wrap th, .table-wrap td { border: 1px solid var(--ha-line); padding: 0.45rem 0.6rem; text-align: left; vertical-align: top; }
+.table-wrap th { background: #e8eef5; }
+.figure img { max-width: 100%; height: auto; border-radius: 10px; border: 1px solid var(--ha-line); }
+.ha-footer-nav {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 2.5rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--ha-line);
+}
+.ha-footer-nav a {
+  text-decoration: none;
+  color: var(--ha-ink);
+  font-weight: 600;
+}
+.ha-index-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+.ha-index-list a {
+  display: grid;
+  grid-template-columns: 2.6rem 1fr;
+  gap: 0.85rem;
+  align-items: center;
+  padding: 0.95rem 1rem;
+  border-radius: 12px;
+  text-decoration: none;
+  color: var(--ha-ink);
+  background: #fff;
+  border: 1px solid var(--ha-line);
+}
+.ha-index-list a:hover { border-color: #c5d0de; background: #f8fafc; }
+.ha-index-list .num {
+  width: 2.4rem;
+  height: 2.4rem;
+  border-radius: 8px;
+  background: var(--ha-accent);
+  color: var(--ha-accent-ink);
+  display: grid;
+  place-items: center;
+  font-family: var(--font-mono);
+  font-weight: 700;
+}
+.ha-author {
+  margin: 0 0 1.5rem;
+  padding: 1.1rem 1.2rem;
+  border-radius: 12px;
+  background: #fff;
+  border: 1px solid var(--ha-line);
+}
+.ha-author h2 {
+  margin: 0 0 0.45rem;
+  font-size: 1.05rem;
+  border: none;
+  padding: 0;
+}
+.ha-author p { margin: 0; color: #3a4652; font-size: 0.98rem; }
+.ha-cover-thumb {
+  display: inline-block;
+  line-height: 0;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid var(--ha-line);
+  margin: 0 0 1.25rem;
+}
+.ha-cover-thumb img {
+  width: min(240px, 100%);
+  height: auto;
+  display: block;
+}
+@media (max-width: 920px) {
+  .ha-shell { grid-template-columns: 1fr; }
+  .ha-sidebar {
+    position: static;
+    height: auto;
+    max-height: none;
+    border-right: none;
+    border-bottom: 1px solid var(--ha-line);
+  }
+  .ha-article { width: min(760px, calc(100% - 2rem)); }
+  .ha-topbar { padding: 0.85rem 1rem; }
+}
+</style>
+</head>
+<body class="hermes-book">
+  <div class="ha-shell">
+    <aside class="ha-sidebar" aria-label="目录">
+      <a class="ha-back" href="index.html">← 返回目录</a>
+      <div class="ha-toc-label">目录</div>
+      <ul class="ha-chapters">
+        <li class="open active" data-chap="ch00.html"><button type="button" class="chap-toggle" aria-expanded="true"><span class="chap-caret" aria-hidden="true">▸</span><span>前言</span></button><ul class="chap-subs"><li><a href="ch00.html#0-1-这本书想解决什么问题">0.1 这本书想解决什么问题</a></li><li><a href="ch00.html#0-2-写给谁看">0.2 写给谁看</a></li><li><a href="ch00.html#0-3-三个基本判断">0.3 三个基本判断</a></li><li><a href="ch00.html#0-4-全书结构">0.4 全书结构</a></li><li><a href="ch00.html#0-5-关于案例与数据的说明">0.5 关于案例与数据的说明</a></li><li><a href="ch00.html#0-6-一个提醒">0.6 一个提醒</a></li></ul></li><li data-chap="ch01.html"><button type="button" class="chap-toggle" aria-expanded="false"><span class="chap-caret" aria-hidden="true">▸</span><span>第一章 重新理解AI组织中的项目</span></button><ul class="chap-subs"><li><a href="ch01.html#1-1-从数字化项目到AI原生项目">1.1 从数字化项目到AI原生项目</a></li><li><a href="ch01.html#1-2-项目失败的常见归因为何失效">1.2 项目失败的常见归因为何失效</a></li><li><a href="ch01.html#1-3-人机协同如何改写交付单元">1.3 人机协同如何改写交付单元</a></li><li><a href="ch01.html#1-4-本书框架与使用方法">1.4 本书框架与使用方法</a></li></ul></li><li data-chap="ch02.html"><button type="button" class="chap-toggle" aria-expanded="false"><span class="chap-caret" aria-hidden="true">▸</span><span>第二章 AI时代的项目战略与组合管理</span></button><ul class="chap-subs"><li><a href="ch02.html#2-1-从项目清单到能力与价值组合">2.1 从项目清单到能力与价值组合</a></li><li><a href="ch02.html#2-2-什么样的事值得做成项目">2.2 什么样的事值得做成项目</a></li><li><a href="ch02.html#2-3-AI投入的优先级与止损机制">2.3 AI投入的优先级与止损机制</a></li><li><a href="ch02.html#2-4-组合看板-战略对齐与资源再平衡">2.4 组合看板：战略对齐与资源再平衡</a></li></ul></li><li data-chap="ch03.html"><button type="button" class="chap-toggle" aria-expanded="false"><span class="chap-caret" aria-hidden="true">▸</span><span>第三章 重新定义项目成功</span></button><ul class="chap-subs"><li><a href="ch03.html#3-1-从按期上线到可验证的业务结果">3.1 从按期上线到可验证的业务结果</a></li><li><a href="ch03.html#3-2-过程指标-结果指标与学习指标">3.2 过程指标、结果指标与学习指标</a></li><li><a href="ch03.html#3-3-AI项目的验收口径怎么定">3.3 AI项目的验收口径怎么定</a></li><li><a href="ch03.html#3-4-失败-试点与规模化的判定标准">3.4 失败、试点与规模化的判定标准</a></li></ul></li><li data-chap="ch04.html"><button type="button" class="chap-toggle" aria-expanded="false"><span class="chap-caret" aria-hidden="true">▸</span><span>第四章 项目组织设计：角色、责任与决策权</span></button><ul class="chap-subs"><li><a href="ch04.html#4-1-产品-业务-数据-算法-工程如何编队">4.1 产品、业务、数据、算法、工程如何编队</a></li><li><a href="ch04.html#4-2-人机分工与关键决策分级">4.2 人机分工与关键决策分级</a></li><li><a href="ch04.html#4-3-项目经理的新定位-从进度官到协同设计师">4.3 项目经理的新定位：从进度官到协同设计师</a></li><li><a href="ch04.html#4-4-责任域-升级路径与决策台账">4.4 责任域、升级路径与决策台账</a></li></ul></li><li data-chap="ch05.html"><button type="button" class="chap-toggle" aria-expanded="false"><span class="chap-caret" aria-hidden="true">▸</span><span>第五章 需求与范围：把不确定变成可管理</span></button><ul class="chap-subs"><li><a href="ch05.html#5-1-AI需求为什么总是-看起来清楚-做起来漂移">5.1 AI需求为什么总是"看起来清楚、做起来漂移"</a></li><li><a href="ch05.html#5-2-问题定义-约束边界与不可自动化清单">5.2 问题定义、约束边界与不可自动化清单</a></li><li><a href="ch05.html#5-3-范围分层-MVP-增强版与禁区">5.3 范围分层：MVP、增强版与禁区</a></li><li><a href="ch05.html#5-4-变更控制-允许探索-但不允许无底线膨胀">5.4 变更控制：允许探索，但不允许无底线膨胀</a></li></ul></li><li data-chap="ch06.html"><button type="button" class="chap-toggle" aria-expanded="false"><span class="chap-caret" aria-hidden="true">▸</span><span>第六章 计划与交付：适配AI工作方式的节奏</span></button><ul class="chap-subs"><li><a href="ch06.html#6-1-为什么传统瀑布和纯敏捷都容易失灵">6.1 为什么传统瀑布和纯敏捷都容易失灵</a></li><li><a href="ch06.html#6-2-双轨节奏-探索轨与交付轨">6.2 双轨节奏：探索轨与交付轨</a></li><li><a href="ch06.html#6-3-里程碑设计-数据-模型-流程-治理四条线">6.3 里程碑设计：数据、模型、流程、治理四条线</a></li><li><a href="ch06.html#6-4-人机并行下的依赖管理与缓冲策略">6.4 人机并行下的依赖管理与缓冲策略</a></li></ul></li><li data-chap="ch07.html"><button type="button" class="chap-toggle" aria-expanded="false"><span class="chap-caret" aria-hidden="true">▸</span><span>第七章 质量、风险与合规治理</span></button><ul class="chap-subs"><li><a href="ch07.html#7-1-AI项目的质量不只是-测通了">7.1 AI项目的质量不只是"测通了"</a></li><li><a href="ch07.html#7-2-模型风险-数据风险-流程风险与责任风险">7.2 模型风险、数据风险、流程风险与责任风险</a></li><li><a href="ch07.html#7-3-验证机制-抽样-回测-人工复核与回滚">7.3 验证机制：抽样、回测、人工复核与回滚</a></li><li><a href="ch07.html#7-4-隐私-安全-伦理与审计如何嵌入交付">7.4 隐私、安全、伦理与审计如何嵌入交付</a></li></ul></li><li data-chap="ch08.html"><button type="button" class="chap-toggle" aria-expanded="false"><span class="chap-caret" aria-hidden="true">▸</span><span>第八章 协作机制：跨部门真正跑起来</span></button><ul class="chap-subs"><li><a href="ch08.html#8-1-AI项目协作失败的组织根因">8.1 AI项目协作失败的组织根因</a></li><li><a href="ch08.html#8-2-协同界面-输入-审核-例外-交接">8.2 协同界面：输入、审核、例外、交接</a></li><li><a href="ch08.html#8-3-会议-文档-智能体与知识沉淀怎么配">8.3 会议、文档、智能体与知识沉淀怎么配</a></li><li><a href="ch08.html#8-4-冲突处理-业务目标-技术可行与合规底线">8.4 冲突处理：业务目标、技术可行与合规底线</a></li></ul></li><li data-chap="ch09.html"><button type="button" class="chap-toggle" aria-expanded="false"><span class="chap-caret" aria-hidden="true">▸</span><span>第九章 人效与激励：让团队愿意用AI交付</span></button><ul class="chap-subs"><li><a href="ch09.html#9-1-从工时核算到判断密度与交付质量">9.1 从工时核算到判断密度与交付质量</a></li><li><a href="ch09.html#9-2-AI贡献如何进入项目评价">9.2 AI贡献如何进入项目评价</a></li><li><a href="ch09.html#9-3-项目经理-专家与执行角色的差异化激励">9.3 项目经理、专家与执行角色的差异化激励</a></li><li><a href="ch09.html#9-4-能力建设-项目团队的AI素养与带教机制">9.4 能力建设：项目团队的AI素养与带教机制</a></li></ul></li><li data-chap="ch10.html"><button type="button" class="chap-toggle" aria-expanded="false"><span class="chap-caret" aria-hidden="true">▸</span><span>第十章 落地路径：从试点到规模化升级</span></button><ul class="chap-subs"><li><a href="ch10.html#10-1-成熟度评估与改造切入点选择">10.1 成熟度评估与改造切入点选择</a></li><li><a href="ch10.html#10-2-90天升级计划与一年演进路线">10.2 90天升级计划与一年演进路线</a></li><li><a href="ch10.html#10-3-可复用的项目操作系统">10.3 可复用的项目操作系统</a></li><li><a href="ch10.html#10-4-典型场景案例与避坑清单">10.4 典型场景案例与避坑清单</a></li></ul></li><li data-chap="appendix.html"><button type="button" class="chap-toggle" aria-expanded="false"><span class="chap-caret" aria-hidden="true">▸</span><span>附录</span></button><ul class="chap-subs"><li><a href="appendix.html#A-1-AI项目管理工具箱">A.1 AI项目管理工具箱</a></li><li><a href="appendix.html#A-2-角色职责-决策分级与验收模板">A.2 角色职责、决策分级与验收模板</a></li><li><a href="appendix.html#A-3-自检清单与复盘表">A.3 自检清单与复盘表</a></li><li><a href="appendix.html#A-4-使用说明与常见误用">A.4 使用说明与常见误用</a></li></ul></li>
+      </ul>
+      <div class="ha-side-foot">
+        <a href="cover.html">封面</a>
+        <a href="index.html">目录</a>
+      </div>
+    </aside>
+    <div class="ha-main">
+      <header class="ha-topbar">
+        <a class="ha-brand" href="index.html">
+          <span class="ha-brand-mark">PM</span>
+          AI组织项目管理升级
+        </a>
+        <div class="ha-top-links">
+          <a href="cover.html">封面</a>
+          <a href="index.html">目录</a>
+        </div>
+      </header>
+      <article class="ha-article">
+        <div class="ha-meta">
+          <div><a href="index.html">目录</a> / 前言</div>
+          <div>赵登琴 著</div>
+        </div>
+        <div class="ha-chapter-head">
+          <div class="ha-chapter-num">·</div>
+          <h1>前言</h1>
+        </div>
+        <nav class="ha-sec-box" aria-label="本章小节">
+          <div class="label">本章小节</div>
+          <ul>
+<li><a href="#0-1-这本书想解决什么问题">0.1 这本书想解决什么问题</a></li><li><a href="#0-2-写给谁看">0.2 写给谁看</a></li><li><a href="#0-3-三个基本判断">0.3 三个基本判断</a></li><li><a href="#0-4-全书结构">0.4 全书结构</a></li><li><a href="#0-5-关于案例与数据的说明">0.5 关于案例与数据的说明</a></li><li><a href="#0-6-一个提醒">0.6 一个提醒</a></li>
+          </ul>
+        </nav>
+        <div class="ha-content">
+<p>前言</p>
+<h2 id="0-1-这本书想解决什么问题">0.1 这本书想解决什么问题</h2>
+<p>过去三年，我参与过不少企业的AI项目评审。会议室里的场景高度相似：技术团队展示模型效果，业务团队提出质疑，管理层关心投入产出，最后形成一个折中决定——先小范围试点，再看情况推广。半年后再问进展，答案往往是"还在跑"，或者"效果有一些，但不太好说"。</p>
+<p>这些项目里，真正因为技术不行而失败的并不多。更多的情况是，技术做出了东西，组织没有接住。模型上线了，流程没改；系统建好了，责任没定；指标好看了，业务没变。项目在交付层面完成，在管理层面悬空。</p>
+<p>这本书试图回答的就是这个悬空的部分。它不讨论模型架构、训练方法、提示词技巧，那些有更专业的书。它讨论的是：当交付物变成"人与模型共同完成的任务"之后，项目管理需要改哪些假设、补哪些机制、换哪些工具。这个问题在过去被归入"数字化转型"的范畴，现在需要被单独拿出来讨论，因为AI带来的不确定性，与传统信息化不是一个量级。</p>
+<h2 id="0-2-写给谁看">0.2 写给谁看</h2>
+<p>这本书主要写给三类读者。</p>
+<p>第一类是承担结果责任的管理者，包括业务负责人、分管数字化的高层、事业部总经理。你们不需要懂技术细节，但需要判断一个AI项目值不值得投、什么时候该停、验收该怎么签。书中的第二章、第三章、第四章、第十章，重点服务这类判断。</p>
+<p>第二类是PMO与项目经理。你们处在一个尴尬的位置：既要用传统方法向上汇报，又要面对AI项目的不确定性。书中关于双轨节奏、阶段闸门、责任域与决策台账的内容，可以直接改写为项目文件。第五、六、七、八章是主要工具区。</p>
+<p>第三类是业务与技术的骨干，包括产品经理、数据负责人、算法负责人、合规负责人。你们在项目里承担具体的判断与协调工作，书中的框架能帮助你们说清自己的边界，也能帮助你们识别哪些要求超出了合理范围。</p>
+<p>书里不假设读者有技术背景，也不假设读者已经做过AI项目。所有术语在第一次出现时都会给出通俗解释，涉及机制的部分会说明"为什么这样做"，而不只是"应该这样做"。</p>
+<h2 id="0-3-三个基本判断">0.3 三个基本判断</h2>
+<p>全书建立在三个判断之上，读者可以先检验是否认同。</p>
+<p>第一个判断是，AI项目的核心不确定性不在技术实现，而在任务定义与组织承接。技术团队通常能在给定任务下找到可行解，真正困难的是把业务诉求翻译成一个可被验证的任务，以及在系统上线后让流程、权限、责任同步改变。这两个环节做不好，技术再好也换不来结果。</p>
+<p>第二个判断是，项目管理的价值正在从"控制"转向"设计"。传统项目管理擅长把复杂工作拆解、排期、跟踪，这套能力在确定性环境下非常有效。在AI项目里，管理者的主要贡献是为不确定性设计容器：什么样的假设值得验证，验证到什么程度算通过，什么条件下应当停止，出了问题谁来兜底。这些设计决定了项目能否收敛。</p>
+<p>第三个判断是，规模化不靠复制项目，而靠沉淀操作系统。一个项目的成功很容易被当作样板，但样板往往依赖特定的人、特定的条件。真正能规模化的，是模板、清单、评测集、资产库、带教机制这些看起来琐碎的东西。它们让第二个项目的起点高于第一个。</p>
+<p>三个判断都可以被反驳。有人会说，技术能力仍然是瓶颈，模型不行什么都免谈；也有人会说，组织问题古今中外都一样，不必为AI单独立论。这些反驳都有道理，书中的论述不追求绝对正确，只希望在具体决策时提供一些可用的分辨力。</p>
+<h2 id="0-4-全书结构">0.4 全书结构</h2>
+<p>第一章重新界定AI原生项目的性质，说明旧的管理假设为何失效。第二章到第四章处理战略与组织：先决定做什么，再决定什么算成功，最后决定谁来做决定。第五章到第八章处理交付：范围、节奏、质量与协作。第九章讨论人，第十章给出一条落地路径。附录提供可以直接使用的模板与清单。</p>
+<p>各章之间有依赖关系，但不要求顺序阅读。如果时间有限，可以先读第一章、第三章与第十章，建立一个整体印象，再按需要查阅其他章节。</p>
+<h2 id="0-5-关于案例与数据的说明">0.5 关于案例与数据的说明</h2>
+<p>书中出现的案例均经过脱敏与合并处理，属于合成案例，用于呈现机制，不指向任何具体企业。涉及统计数据时，会标注来源机构与口径。例如引用MIT Project NANDA在2025年的报告时，会说明"按组织口径，约95%的企业没有获得可衡量回报"，并提示这一数字在不同口径下有不同含义；引用Gartner关于代理型AI项目取消率的预测时，会说明其针对的是代理型项目，而非全部AI项目。</p>
+<p>凡属作者判断而非可核验事实的地方，会用"更可能""通常""在我的观察里"这类表述区分。这样写不够果断，但对读者更负责：管理判断本应有条件，把条件隐去，反而会误导。</p>
+<h2 id="0-6-一个提醒">0.6 一个提醒</h2>
+<p>这本书里的方法，都不保证成功。它们能提高成功率，也能让失败变得更便宜、更可解释。真正决定结果的，仍然是企业在具体场景中的判断力，以及愿不愿意为判断承担后果。</p>
+<p>如果读完只记住一句话，我希望是这一句：AI项目管理的核心，不是让项目更快地做完，而是让组织更快地知道自己做对了什么、做错了什么。前者追求速度，后者积累能力。速度会耗尽，能力会留下。</p>
+        </div>
+        <div class="ha-footer-nav">
+          <a href="index.html">← 上一页</a>
+          <a href="ch01.html">下一页 →</a>
+        </div>
+      </article>
+    </div>
+  </div>
+  
+<script>
+(function () {
+  var list = document.querySelector(".ha-chapters");
+  if (!list) return;
+  list.addEventListener("click", function (e) {
+    var btn = e.target.closest(".chap-toggle");
+    if (!btn || !list.contains(btn)) return;
+    var li = btn.closest("li[data-chap]");
+    if (!li) return;
+    var willOpen = !li.classList.contains("open");
+    list.querySelectorAll("li[data-chap]").forEach(function (item) {
+      item.classList.remove("open");
+      var b = item.querySelector(".chap-toggle");
+      if (b) b.setAttribute("aria-expanded", "false");
+    });
+    if (willOpen) {
+      li.classList.add("open");
+      btn.setAttribute("aria-expanded", "true");
+      // 第一次展开时进入该章正文；已在本章则只展开小节
+      var href = li.getAttribute("data-chap");
+      var file = (location.pathname.split("/").pop() || "");
+      if (href && file !== href && !file.endsWith("/" + href)) {
+        location.href = href;
+      }
+    }
+  });
+})();
+</script>
+
+</body>
+</html>

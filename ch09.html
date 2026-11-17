@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>第九章 人效与激励：让团队愿意用AI交付 · AI组织项目管理升级</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,650&family=IBM+Plex+Mono:wght@400;500&family=Noto+Sans+SC:wght@400;500;700&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+:root {
+  --ha-bg: #f5f7fa;
+  --ha-sidebar: #f5f7fa;
+  --ha-ink: #0f1c2e;
+  --ha-muted: #6b7a8d;
+  --ha-line: #dde3eb;
+  --ha-active-bg: #e8eef5;
+  --ha-accent: #f5a623;
+  --ha-accent-ink: #1c1c1a;
+}
+body.hermes-book {
+  background: var(--ha-bg) !important;
+  color: var(--ha-ink);
+  font-size: 17px;
+  line-height: 1.75;
+}
+body.hermes-book a { color: #9a5b00; }
+body.hermes-book a:hover { color: var(--ha-ink); }
+.ha-shell {
+  display: grid;
+  grid-template-columns: 270px minmax(0, 1fr);
+  min-height: 100vh;
+}
+.ha-sidebar {
+  position: sticky;
+  top: 0;
+  align-self: start;
+  height: 100vh;
+  overflow-y: auto;
+  padding: 1.25rem 1rem 1.5rem;
+  border-right: 1px solid var(--ha-line);
+  background: var(--ha-sidebar);
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+.ha-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: var(--ha-muted) !important;
+  text-decoration: none;
+  font-size: 0.88rem;
+}
+.ha-back:hover { color: var(--ha-ink) !important; }
+.ha-toc-label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--ha-muted);
+  letter-spacing: 0.06em;
+  margin: 0.35rem 0 0.15rem;
+}
+.ha-chapters {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+.ha-chapters > li {
+  border-radius: 10px;
+}
+.ha-chapters .chap-toggle {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.35rem;
+  width: 100%;
+  padding: 0.55rem 0.7rem;
+  border: 0;
+  border-radius: 10px;
+  border-left: 3px solid transparent;
+  background: transparent;
+  color: var(--ha-muted);
+  font: inherit;
+  font-size: 0.9rem;
+  line-height: 1.35;
+  text-align: left;
+  cursor: pointer;
+}
+.ha-chapters .chap-toggle:hover {
+  background: rgba(15,28,46,0.04);
+  color: var(--ha-ink);
+}
+.ha-chapters > li.open > .chap-toggle,
+.ha-chapters > li.active > .chap-toggle {
+  background: var(--ha-active-bg);
+  color: var(--ha-ink);
+  font-weight: 600;
+  border-left-color: var(--ha-accent);
+}
+.ha-chapters .chap-caret {
+  flex: 0 0 auto;
+  width: 0.9rem;
+  margin-top: 0.15rem;
+  color: inherit;
+  opacity: 0.7;
+  transition: transform 0.15s ease;
+}
+.ha-chapters > li.open > .chap-toggle .chap-caret {
+  transform: rotate(90deg);
+}
+.ha-chapters .chap-subs {
+  list-style: none;
+  margin: 0 0 0.35rem;
+  padding: 0 0.4rem 0.25rem 1.35rem;
+  display: none;
+}
+.ha-chapters > li.open > .chap-subs {
+  display: grid;
+  gap: 0.12rem;
+}
+.ha-chapters .chap-subs a {
+  display: block;
+  padding: 0.32rem 0.55rem;
+  border-radius: 8px;
+  text-decoration: none;
+  color: var(--ha-muted);
+  font-size: 0.82rem;
+  line-height: 1.35;
+}
+.ha-chapters .chap-subs a:hover {
+  background: rgba(15,28,46,0.04);
+  color: var(--ha-ink);
+}
+.ha-chapters .chap-subs a.active {
+  color: var(--ha-ink);
+  font-weight: 600;
+  background: rgba(31,111,235,0.08);
+}
+.ha-side-foot {
+  margin-top: auto;
+  padding-top: 1rem;
+  border-top: 1px solid var(--ha-line);
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+.ha-side-foot a {
+  color: var(--ha-muted);
+  text-decoration: none;
+  font-size: 0.88rem;
+}
+.ha-side-foot a:hover { color: var(--ha-ink); }
+.ha-main {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+.ha-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.95rem 2rem;
+  border-bottom: 1px solid var(--ha-line);
+  background: rgba(245,247,250,0.92);
+  backdrop-filter: blur(8px);
+  position: sticky;
+  top: 0;
+  z-index: 5;
+}
+.ha-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  text-decoration: none;
+  color: var(--ha-ink);
+  font-weight: 650;
+  font-size: 0.98rem;
+  letter-spacing: -0.02em;
+}
+.ha-brand-mark {
+  width: 1.55rem;
+  height: 1.55rem;
+  border-radius: 6px;
+  background: #0f1c2e;
+  color: #fff;
+  display: grid;
+  place-items: center;
+  font-size: 0.62rem;
+  font-weight: 700;
+  font-family: var(--font-mono);
+}
+.ha-top-links {
+  display: flex;
+  gap: 1.1rem;
+  flex-wrap: wrap;
+}
+.ha-top-links a {
+  color: var(--ha-muted);
+  text-decoration: none;
+  font-size: 0.9rem;
+}
+.ha-top-links a:hover { color: var(--ha-ink); }
+.ha-article {
+  width: min(760px, calc(100% - 3rem));
+  margin: 0 auto;
+  padding: 1.75rem 0 4rem;
+}
+.ha-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  color: var(--ha-muted);
+  font-size: 0.88rem;
+  margin-bottom: 1.25rem;
+}
+.ha-meta a { color: inherit; text-decoration: none; }
+.ha-meta a:hover { color: var(--ha-ink); }
+.ha-chapter-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.9rem;
+  margin-bottom: 1.5rem;
+}
+.ha-chapter-num {
+  flex: 0 0 auto;
+  min-width: 2.4rem;
+  height: 2.4rem;
+  padding: 0 0.55rem;
+  border-radius: 8px;
+  background: var(--ha-accent);
+  color: var(--ha-accent-ink);
+  display: grid;
+  place-items: center;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+.ha-chapter-head h1 {
+  margin: 0;
+  font-size: clamp(1.55rem, 3vw, 2.15rem);
+  border: none;
+  padding: 0;
+  letter-spacing: -0.03em;
+}
+.ha-section-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.05rem;
+}
+.ha-section-list a {
+  display: block;
+  padding: 0.35rem 0.55rem;
+  border-radius: 8px;
+  text-decoration: none;
+  color: var(--ha-muted);
+  font-size: 0.82rem;
+  line-height: 1.35;
+}
+.ha-section-list a:hover {
+  background: rgba(15,28,46,0.04);
+  color: var(--ha-ink);
+}
+.ha-content h2 {
+  border-top: none;
+  padding-top: 0.2rem;
+  margin-top: 2.2rem;
+}
+.ha-content h2::before {
+  content: "";
+  display: block;
+  width: 2rem;
+  height: 3px;
+  background: var(--ha-accent);
+  margin-bottom: 0.75rem;
+  border-radius: 2px;
+}
+.ha-content p { margin: 0 0 1rem; text-indent: 2em; }
+.ha-sec-box {
+  margin: 0 0 1.75rem;
+  padding: 1rem 1.15rem 1.05rem;
+  border-radius: 12px;
+  background: #fff;
+  border: 1px solid var(--ha-line);
+}
+.ha-sec-box .label {
+  margin: 0 0 0.55rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--ha-muted);
+  letter-spacing: 0.04em;
+}
+.ha-sec-box ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.35rem;
+}
+.ha-sec-box a {
+  text-decoration: none;
+  color: var(--ha-ink);
+  font-size: 0.95rem;
+}
+.ha-sec-box a:hover { color: #1554b5; }
+.book-block {
+  margin: 0 0 1rem;
+  padding: 1rem 1.1rem 1.05rem;
+  border-radius: 12px;
+  background: #fff;
+  border: 1px solid var(--ha-line);
+}
+.book-block h2 {
+  margin: 0 0 0.55rem;
+  font-size: 1.05rem;
+  border: none;
+  padding: 0;
+  display: flex;
+  gap: 0.65rem;
+  align-items: baseline;
+}
+.book-block h2 a { text-decoration: none; color: var(--ha-ink); }
+.book-block h2 .num {
+  display: inline-grid;
+  place-items: center;
+  width: 1.85rem;
+  height: 1.85rem;
+  border-radius: 7px;
+  background: var(--ha-accent);
+  color: var(--ha-accent-ink);
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+.book-block ul.secs {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  color: #3a4652;
+  font-size: 0.92rem;
+  display: grid;
+  gap: 0.28rem;
+}
+.book-block ul.secs a { text-decoration: none; color: #3a4652; }
+.book-block ul.secs a:hover { color: #1554b5; }
+.figcap { color: var(--ha-muted); font-size: 0.9rem; text-align: center; margin: 0.25rem 0 1rem; }
+.table-wrap { overflow-x: auto; margin: 1rem 0; }
+.table-wrap table { width: 100%; border-collapse: collapse; font-size: 0.92rem; }
+.table-wrap th, .table-wrap td { border: 1px solid var(--ha-line); padding: 0.45rem 0.6rem; text-align: left; vertical-align: top; }
+.table-wrap th { background: #e8eef5; }
+.figure img { max-width: 100%; height: auto; border-radius: 10px; border: 1px solid var(--ha-line); }
+.ha-footer-nav {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 2.5rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--ha-line);
+}
+.ha-footer-nav a {
+  text-decoration: none;
+  color: var(--ha-ink);
+  font-weight: 600;
+}
+.ha-index-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+.ha-index-list a {
+  display: grid;
+  grid-template-columns: 2.6rem 1fr;
+  gap: 0.85rem;
+  align-items: center;
+  padding: 0.95rem 1rem;
+  border-radius: 12px;
+  text-decoration: none;
+  color: var(--ha-ink);
+  background: #fff;
+  border: 1px solid var(--ha-line);
+}
+.ha-index-list a:hover { border-color: #c5d0de; background: #f8fafc; }
+.ha-index-list .num {
+  width: 2.4rem;
+  height: 2.4rem;
+  border-radius: 8px;
+  background: var(--ha-accent);
+  color: var(--ha-accent-ink);
+  display: grid;
+  place-items: center;
+  font-family: var(--font-mono);
+  font-weight: 700;
+}
+.ha-author {
+  margin: 0 0 1.5rem;
+  padding: 1.1rem 1.2rem;
+  border-radius: 12px;
+  background: #fff;
+  border: 1px solid var(--ha-line);
+}
+.ha-author h2 {
+  margin: 0 0 0.45rem;
+  font-size: 1.05rem;
+  border: none;
+  padding: 0;
+}
+.ha-author p { margin: 0; color: #3a4652; font-size: 0.98rem; }
+.ha-cover-thumb {
+  display: inline-block;
+  line-height: 0;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid var(--ha-line);
+  margin: 0 0 1.25rem;
+}
+.ha-cover-thumb img {
+  width: min(240px, 100%);
+  height: auto;
+  display: block;
+}
+@media (max-width: 920px) {
+  .ha-shell { grid-template-columns: 1fr; }
+  .ha-sidebar {
+    position: static;
+    height: auto;
+    max-height: none;
+    border-right: none;
+    border-bottom: 1px solid var(--ha-line);
+  }
+  .ha-article { width: min(760px, calc(100% - 2rem)); }
+  .ha-topbar { padding: 0.85rem 1rem; }
+}
+</style>
+</head>
+<body class="hermes-book">
+  <div class="ha-shell">
+    <aside class="ha-sidebar" aria-label="目录">
+      <a class="ha-back" href="index.html">← 返回目录</a>
+      <div class="ha-toc-label">目录</div>
+      <ul class="ha-chapters">
+        <li data-chap="ch00.html"><button type="button" class="chap-toggle" aria-expanded="false"><span class="chap-caret" aria-hidden="true">▸</span><span>前言</span></button><ul class="chap-subs"><li><a href="ch00.html#0-1-这本书想解决什么问题">0.1 这本书想解决什么问题</a></li><li><a href="ch00.html#0-2-写给谁看">0.2 写给谁看</a></li><li><a href="ch00.html#0-3-三个基本判断">0.3 三个基本判断</a></li><li><a href="ch00.html#0-4-全书结构">0.4 全书结构</a></li><li><a href="ch00.html#0-5-关于案例与数据的说明">0.5 关于案例与数据的说明</a></li><li><a href="ch00.html#0-6-一个提醒">0.6 一个提醒</a></li></ul></li><li data-chap="ch01.html"><button type="button" class="chap-toggle" aria-expanded="false"><span class="chap-caret" aria-hidden="true">▸</span><span>第一章 重新理解AI组织中的项目</span></button><ul class="chap-subs"><li><a href="ch01.html#1-1-从数字化项目到AI原生项目">1.1 从数字化项目到AI原生项目</a></li><li><a href="ch01.html#1-2-项目失败的常见归因为何失效">1.2 项目失败的常见归因为何失效</a></li><li><a href="ch01.html#1-3-人机协同如何改写交付单元">1.3 人机协同如何改写交付单元</a></li><li><a href="ch01.html#1-4-本书框架与使用方法">1.4 本书框架与使用方法</a></li></ul></li><li data-chap="ch02.html"><button type="button" class="chap-toggle" aria-expanded="false"><span class="chap-caret" aria-hidden="true">▸</span><span>第二章 AI时代的项目战略与组合管理</span></button><ul class="chap-subs"><li><a href="ch02.html#2-1-从项目清单到能力与价值组合">2.1 从项目清单到能力与价值组合</a></li><li><a href="ch02.html#2-2-什么样的事值得做成项目">2.2 什么样的事值得做成项目</a></li><li><a href="ch02.html#2-3-AI投入的优先级与止损机制">2.3 AI投入的优先级与止损机制</a></li><li><a href="ch02.html#2-4-组合看板-战略对齐与资源再平衡">2.4 组合看板：战略对齐与资源再平衡</a></li></ul></li><li data-chap="ch03.html"><button type="button" class="chap-toggle" aria-expanded="false"><span class="chap-caret" aria-hidden="true">▸</span><span>第三章 重新定义项目成功</span></button><ul class="chap-subs"><li><a href="ch03.html#3-1-从按期上线到可验证的业务结果">3.1 从按期上线到可验证的业务结果</a></li><li><a href="ch03.html#3-2-过程指标-结果指标与学习指标">3.2 过程指标、结果指标与学习指标</a></li><li><a href="ch03.html#3-3-AI项目的验收口径怎么定">3.3 AI项目的验收口径怎么定</a></li><li><a href="ch03.html#3-4-失败-试点与规模化的判定标准">3.4 失败、试点与规模化的判定标准</a></li></ul></li><li data-chap="ch04.html"><button type="button" class="chap-toggle" aria-expanded="false"><span class="chap-caret" aria-hidden="true">▸</span><span>第四章 项目组织设计：角色、责任与决策权</span></button><ul class="chap-subs"><li><a href="ch04.html#4-1-产品-业务-数据-算法-工程如何编队">4.1 产品、业务、数据、算法、工程如何编队</a></li><li><a href="ch04.html#4-2-人机分工与关键决策分级">4.2 人机分工与关键决策分级</a></li><li><a href="ch04.html#4-3-项目经理的新定位-从进度官到协同设计师">4.3 项目经理的新定位：从进度官到协同设计师</a></li><li><a href="ch04.html#4-4-责任域-升级路径与决策台账">4.4 责任域、升级路径与决策台账</a></li></ul></li><li data-chap="ch05.html"><button type="button" class="chap-toggle" aria-expanded="false"><span class="chap-caret" aria-hidden="true">▸</span><span>第五章 需求与范围：把不确定变成可管理</span></button><ul class="chap-subs"><li><a href="ch05.html#5-1-AI需求为什么总是-看起来清楚-做起来漂移">5.1 AI需求为什么总是"看起来清楚、做起来漂移"</a></li><li><a href="ch05.html#5-2-问题定义-约束边界与不可自动化清单">5.2 问题定义、约束边界与不可自动化清单</a></li><li><a href="ch05.html#5-3-范围分层-MVP-增强版与禁区">5.3 范围分层：MVP、增强版与禁区</a></li><li><a href="ch05.html#5-4-变更控制-允许探索-但不允许无底线膨胀">5.4 变更控制：允许探索，但不允许无底线膨胀</a></li></ul></li><li data-chap="ch06.html"><button type="button" class="chap-toggle" aria-expanded="false"><span class="chap-caret" aria-hidden="true">▸</span><span>第六章 计划与交付：适配AI工作方式的节奏</span></button><ul class="chap-subs"><li><a href="ch06.html#6-1-为什么传统瀑布和纯敏捷都容易失灵">6.1 为什么传统瀑布和纯敏捷都容易失灵</a></li><li><a href="ch06.html#6-2-双轨节奏-探索轨与交付轨">6.2 双轨节奏：探索轨与交付轨</a></li><li><a href="ch06.html#6-3-里程碑设计-数据-模型-流程-治理四条线">6.3 里程碑设计：数据、模型、流程、治理四条线</a></li><li><a href="ch06.html#6-4-人机并行下的依赖管理与缓冲策略">6.4 人机并行下的依赖管理与缓冲策略</a></li></ul></li><li data-chap="ch07.html"><button type="button" class="chap-toggle" aria-expanded="false"><span class="chap-caret" aria-hidden="true">▸</span><span>第七章 质量、风险与合规治理</span></button><ul class="chap-subs"><li><a href="ch07.html#7-1-AI项目的质量不只是-测通了">7.1 AI项目的质量不只是"测通了"</a></li><li><a href="ch07.html#7-2-模型风险-数据风险-流程风险与责任风险">7.2 模型风险、数据风险、流程风险与责任风险</a></li><li><a href="ch07.html#7-3-验证机制-抽样-回测-人工复核与回滚">7.3 验证机制：抽样、回测、人工复核与回滚</a></li><li><a href="ch07.html#7-4-隐私-安全-伦理与审计如何嵌入交付">7.4 隐私、安全、伦理与审计如何嵌入交付</a></li></ul></li><li data-chap="ch08.html"><button type="button" class="chap-toggle" aria-expanded="false"><span class="chap-caret" aria-hidden="true">▸</span><span>第八章 协作机制：跨部门真正跑起来</span></button><ul class="chap-subs"><li><a href="ch08.html#8-1-AI项目协作失败的组织根因">8.1 AI项目协作失败的组织根因</a></li><li><a href="ch08.html#8-2-协同界面-输入-审核-例外-交接">8.2 协同界面：输入、审核、例外、交接</a></li><li><a href="ch08.html#8-3-会议-文档-智能体与知识沉淀怎么配">8.3 会议、文档、智能体与知识沉淀怎么配</a></li><li><a href="ch08.html#8-4-冲突处理-业务目标-技术可行与合规底线">8.4 冲突处理：业务目标、技术可行与合规底线</a></li></ul></li><li class="open active" data-chap="ch09.html"><button type="button" class="chap-toggle" aria-expanded="true"><span class="chap-caret" aria-hidden="true">▸</span><span>第九章 人效与激励：让团队愿意用AI交付</span></button><ul class="chap-subs"><li><a href="ch09.html#9-1-从工时核算到判断密度与交付质量">9.1 从工时核算到判断密度与交付质量</a></li><li><a href="ch09.html#9-2-AI贡献如何进入项目评价">9.2 AI贡献如何进入项目评价</a></li><li><a href="ch09.html#9-3-项目经理-专家与执行角色的差异化激励">9.3 项目经理、专家与执行角色的差异化激励</a></li><li><a href="ch09.html#9-4-能力建设-项目团队的AI素养与带教机制">9.4 能力建设：项目团队的AI素养与带教机制</a></li></ul></li><li data-chap="ch10.html"><button type="button" class="chap-toggle" aria-expanded="false"><span class="chap-caret" aria-hidden="true">▸</span><span>第十章 落地路径：从试点到规模化升级</span></button><ul class="chap-subs"><li><a href="ch10.html#10-1-成熟度评估与改造切入点选择">10.1 成熟度评估与改造切入点选择</a></li><li><a href="ch10.html#10-2-90天升级计划与一年演进路线">10.2 90天升级计划与一年演进路线</a></li><li><a href="ch10.html#10-3-可复用的项目操作系统">10.3 可复用的项目操作系统</a></li><li><a href="ch10.html#10-4-典型场景案例与避坑清单">10.4 典型场景案例与避坑清单</a></li></ul></li><li data-chap="appendix.html"><button type="button" class="chap-toggle" aria-expanded="false"><span class="chap-caret" aria-hidden="true">▸</span><span>附录</span></button><ul class="chap-subs"><li><a href="appendix.html#A-1-AI项目管理工具箱">A.1 AI项目管理工具箱</a></li><li><a href="appendix.html#A-2-角色职责-决策分级与验收模板">A.2 角色职责、决策分级与验收模板</a></li><li><a href="appendix.html#A-3-自检清单与复盘表">A.3 自检清单与复盘表</a></li><li><a href="appendix.html#A-4-使用说明与常见误用">A.4 使用说明与常见误用</a></li></ul></li>
+      </ul>
+      <div class="ha-side-foot">
+        <a href="cover.html">封面</a>
+        <a href="index.html">目录</a>
+      </div>
+    </aside>
+    <div class="ha-main">
+      <header class="ha-topbar">
+        <a class="ha-brand" href="index.html">
+          <span class="ha-brand-mark">PM</span>
+          AI组织项目管理升级
+        </a>
+        <div class="ha-top-links">
+          <a href="cover.html">封面</a>
+          <a href="index.html">目录</a>
+        </div>
+      </header>
+      <article class="ha-article">
+        <div class="ha-meta">
+          <div><a href="index.html">目录</a> / 第09章</div>
+          <div>赵登琴 著</div>
+        </div>
+        <div class="ha-chapter-head">
+          <div class="ha-chapter-num">09</div>
+          <h1>第九章 人效与激励：让团队愿意用AI交付</h1>
+        </div>
+        <nav class="ha-sec-box" aria-label="本章小节">
+          <div class="label">本章小节</div>
+          <ul>
+<li><a href="#9-1-从工时核算到判断密度与交付质量">9.1 从工时核算到判断密度与交付质量</a></li><li><a href="#9-2-AI贡献如何进入项目评价">9.2 AI贡献如何进入项目评价</a></li><li><a href="#9-3-项目经理-专家与执行角色的差异化激励">9.3 项目经理、专家与执行角色的差异化激励</a></li><li><a href="#9-4-能力建设-项目团队的AI素养与带教机制">9.4 能力建设：项目团队的AI素养与带教机制</a></li>
+          </ul>
+        </nav>
+        <div class="ha-content">
+<p>一个AI项目上线后，最先出现的往往是人力核算的争议。财务问，系统替代了多少工时，为什么编制没有减少；业务问，既然效率提高了，为什么人均产出没有明显变化；一线员工则抱怨，系统给的建议不靠谱，复核反而增加了工作量。三方说的都是事实，只是他们用的尺子不同，而现有的绩效考核体系里，并没有一把能同时量住这三件事的尺子。</p>
+<p>人机混合的劳动有一个特点：产出的一部分来自模型，一部分来自人的判断，两者的贡献难以分离。沿用工时核算，会把判断的价值抹平；沿用产量核算，会鼓励人做容易计数的动作。激励设计如果跟不上交付方式的变化，前八章建立的机制会在执行层被慢慢消解。</p>
+<h2 id="9-1-从工时核算到判断密度与交付质量">9.1 从工时核算到判断密度与交付质量</h2>
+<p>（一）工时核算为什么失效</p>
+<p>工时核算的前提是"投入时间与产出价值成正比"，这个前提在标准化劳动中成立，在AI辅助的劳动中迅速失效。一个人用模型处理一百份合同，可能只用两小时，但这两小时里包含了判断哪些条款需要重点看、判断模型给出的偏离是否成立、判断是否需要升级给法务。价值不来自敲键盘的时间，而来自这些判断的质量。</p>
+<p>更麻烦的是，工时核算会诱导行为扭曲。当一个人的考核基于在岗时长，他会倾向于把本可以快速完成的工作拉长，或者承接更多低价值任务来填充时间。当考核基于处理数量，他会倾向于跳过复核、快速放行，把风险留给下游。两种扭曲在AI项目里都很常见，因为它们都符合"看起来更努力"的评价标准。</p>
+<p>工时核算还有一个隐性后果：它让复核这类"不产生新东西"的工作显得低价值。复核员每天看两百条模型输出，只挑出十条需要修改，从产量上看几乎没有贡献，但从风险上看，他可能避免了十次事故。用工时或产量衡量，这类工作永远得不到应有的评价。</p>
+<p>（二）判断密度作为新的工作量单位</p>
+<p>可以用"判断密度"来粗略衡量一段工作的价值含量。它指的是单位时间内需要做出的、有后果的判断数量。判断密度高的工作，价值不在于做了多少，而在于判断是否准确、是否及时、是否被记录。</p>
+<p>判断密度可以从三个侧面观察。第一个侧面是决策点数量，一段工作里有多少处需要人做选择，而不是执行既定步骤。第二个侧面是后果强度，判断错了会造成多大损失，是否可逆。第三个侧面是信息不完备程度，判断是在信息充分时做出，还是在信息模糊、需要经验补足时做出。</p>
+<p>三个侧面都高的岗位，例如高风险场景的复核专家、复杂场景的任务定义者，其价值远高于按件计酬的执行岗。这不是贬低执行岗，而是承认不同岗位的价值来源不同，不能用同一套计量方式。</p>
+<p>判断密度不必精确测量，可以用岗位画像与工作日志做粗略估计。例如记录一周内实际做出的判断类型与数量，比事后争论"谁更辛苦"更有依据。</p>
+<p>（三）交付质量的计量方式</p>
+<p>质量计量要避免两个极端：只看结果，或只看过程。只看结果，会把运气当作能力；只看过程，会把合规当作价值。</p>
+<p>可用的做法是三层计量。第一层是结果指标，例如误判率、返工率、客户投诉率，反映交付的最终效果。第二层是过程指标，例如复核覆盖率、异常上报及时率、决策记录完整率，反映交付的可靠性。第三层是能力指标，例如沉淀的案例数量、被他人复用的组件数量、带教的新人数量，反映交付的长期价值。</p>
+<p>三层结合，可以避免"结果好但过程乱"或"过程规范但没结果"的偏评。计量周期也应当不同，结果指标按月看，过程指标按周看，能力指标按季度看。周期错配会让评价失真，例如用周度数据评价需要季度才能显现的能力建设。</p>
+<p>（四）三种角色的价值贡献不同</p>
+<p>同一个项目里，产品、专家、执行三类角色的价值贡献方式不同，用同一把尺子量，必然有一类被低估。</p>
+<p>产品与项目经理的价值在于减少浪费。他们通过定义任务、设计流程、协调资源，让团队少走弯路。这类贡献难以直接计量，但可以从"返工次数""决策周期""跨部门争议数量"等侧面观察。</p>
+<p>业务专家的价值在于提供判断标准。他们定义什么是对的、什么是例外、什么必须升级。这类贡献体现在标注一致性、例外清单的完备度、复核争议的减少。</p>
+<p>执行角色的价值在于稳定交付与风险拦截。他们保证日常运转，并在异常出现时第一时间发现。这类贡献体现在处理时效、异常发现率、错误扩散范围。</p>
+<p>三类贡献都应当进入评价，只是权重不同。只评价执行，会让定义与协调工作无人愿做；只评价定义，会让日常运转失去保障。</p>
+<h2 id="9-2-AI贡献如何进入项目评价">9.2 AI贡献如何进入项目评价</h2>
+<p>（一）项目层面的AI贡献核算</p>
+<p>项目评价需要回答一个基本问题：这个项目的产出里，有多少是模型带来的，有多少是流程改造带来的，有多少是人的努力带来的。三者混在一起，会导致资源投错方向。</p>
+<p>一种实用的拆法是分层核算。模型贡献看"同等人力下的处理量提升"与"同等处理量下的质量提升"；流程贡献看"环节减少带来的周期缩短"与"交接减少带来的错误下降"；人的贡献看"判断准确率提升"与"异常拦截率提升"。三层不必精确分离，但要有大致的归因比例。</p>
+<p>归因比例会影响后续投入。如果发现收益主要来自流程简化，那么继续优化模型的边际收益有限，资源应转向流程；如果发现收益主要来自人的判断，那么应加强培训与工具支持，而不是继续堆模型。</p>
+<p>核算还要计入隐性成本。复核人力、标注成本、系统运维、合规审查，都应当计入总成本。很多项目的账面收益漂亮，是因为隐性成本被记在了别的部门账上。把成本归集完整，才能判断项目是否真的划算。</p>
+<p>（二）个人层面的贡献归属</p>
+<p>个人贡献归属在AI项目里格外困难，因为成果往往是集体协作的产物。一个人提出的一个判断标准，可能让整个团队的标注一致性提升，但他的直接产出并不突出。</p>
+<p>可行的做法是把贡献分成三类记录。直接贡献指本人完成的任务与产出；间接贡献指本人提供的标准、方法、工具被他人使用；组织贡献指本人带教、协调、沉淀知识。三类分别记录，评价时综合考量，而不是只看第一类。</p>
+<p>记录方式可以很轻。每个季度让成员填写一页贡献说明，列出三项直接产出、两项被他人使用的方法、一项组织贡献，由项目经理与同行评议确认。这种做法不能完全消除主观性，但比只看KPI更能反映真实贡献。</p>
+<p>需要警惕的是"可见性偏见"。善于表达的人容易被看见，默默解决问题的人容易被忽略。评议时应当刻意关注那些"没出事"的环节，例如某个复核员长期零事故，可能不是因为他运气好，而是因为他的判断稳定。</p>
+<p>（三）避免"AI替代人"的错误叙事</p>
+<p>"AI替代人"的叙事在激励上极具破坏性。如果员工相信使用AI最终会让自己被裁掉，他最理性的选择是消极使用、隐瞒效率提升、把AI当成额外负担。企业于是得到一个奇怪的结局：投入巨资建设的系统，被最了解它的人主动抵制。</p>
+<p>更准确的叙事是"AI改变工作构成"。一部分重复劳动被替代，判断、协调、异常处理的比例上升。企业的用工需求可能减少，但减少的是特定岗位，不是全部岗位。把这个变化讲清楚，比反复强调"AI不会取代人"更有说服力，因为后者听起来像安慰。</p>
+<p>叙事还需要配套安排。因效率提升而释放的人力，应当有明确的去向，例如转岗到判断密集型岗位、参与新场景建设、承担带教工作。没有去向承诺，任何叙事都不可信。</p>
+<h2 id="9-3-项目经理-专家与执行角色的差异化激励">9.3 项目经理、专家与执行角色的差异化激励</h2>
+<p>（一）项目经理：从进度到结果</p>
+<p>项目经理的激励如果仍与"按期上线"绑定，前几章讨论的所有机制都会被抵消。合理的考核应当包含三项：结果达成度、过程健康度、资产沉淀度。</p>
+<p>结果达成度看的是验收口径是否被满足，而不是是否上线。过程健康度看的是决策是否及时、范围是否失控、风险是否被记录。资产沉淀度看的是项目结束时留下了多少可复用内容。</p>
+<p>三项权重可以按项目类型调整。探索型项目更看重学习结论与资产沉淀，交付型项目更看重结果与过程。权重不调整，探索型项目会被交付指标压垮。</p>
+<p>激励形式也应当多样。除了奖金，还应当包括项目选择权、团队组建权、对外曝光机会。对项目经理而言，能主导一个更有价值的项目，往往比一笔奖金更有吸引力。</p>
+<p>（二）专家：知识贡献的定价</p>
+<p>业务专家在AI项目里承担了大量隐性工作：定义标准、审核样本、解释例外、带教新人。这些工作不进KPI，却决定项目质量。如果不给予明确回报，专家会逐渐退出，把时间放回自己的本职工作。</p>
+<p>定价方式可以是专项补贴、项目分红、职级认定，也可以是时间保障。时间保障常被忽略，却最实用：明确专家每周有固定工时投入项目，其本职工作考核相应减免。没有这条，专家参与项目就等于给自己加负担。</p>
+<p>知识贡献还应当被记录与署名。专家编写的判断标准、整理的案例集，应当有明确的知识产权归属与署名，并在组织内被引用。署名看似小事，却是专业尊严的来源。</p>
+<p>（三）执行角色：复核质量的激励</p>
+<p>复核员的激励不能只看处理量。只按件计酬，会鼓励快速放行；只看准确率，会导致过度谨慎、效率低下。合理的组合是"处理量+拦截质量+一致性"。</p>
+<p>拦截质量可以用"被下游确认的误判拦截数"衡量，而不是"提出的异议数"。提出异议很容易，异议被采纳才说明判断有效。一致性可以用复核员之间的判断一致率衡量，一致率过低说明标准不清，需要培训或修订标准。</p>
+<p>还要给复核员一条反馈通道。他们最先发现模型的系统性问题，如果反馈无门，问题会被重复处理而无改进。可以设一个简单的机制：每月汇总复核员提出的高频问题，由项目组评估并回复处理结果。回复本身不产生直接价值，却让复核员感到自己的判断被尊重。</p>
+<p>（四）团队激励与个人激励的组合</p>
+<p>过度强调个人激励，会破坏协作；过度强调团队激励，会养懒人。AI项目需要两者结合，比例取决于任务的可分割程度。</p>
+<p>任务高度相互依赖时，团队激励应占主导，例如按项目整体结果发放奖金，再由团队内部根据贡献评议分配。任务相对独立时，个人激励可以占更大比重，例如按场景交付质量评价。</p>
+<p>无论比例如何，都应当保留一部分"共同池"，用于奖励那些难以归因但确实重要的行为：帮助他人解决问题、主动记录知识、在关键时刻承担风险。共同池的分配由团队评议，管理者保留否决权，避免变成平均主义。</p>
+<p>激励设计还要考虑时间。AI项目的成果往往滞后，如果奖金完全与短期指标挂钩，团队会倾向于做容易见效的事。可以设一部分延期支付，与上线后六个月的表现挂钩。延期支付不是不信任，而是承认效果需要时间验证。</p>
+<h2 id="9-4-能力建设-项目团队的AI素养与带教机制">9.4 能力建设：项目团队的AI素养与带教机制</h2>
+<p>（一）三种素养</p>
+<p>团队需要三种不同层次的AI素养，混为一谈会导致培训无效。</p>
+<p>第一种是会用，指能够熟练使用AI工具完成日常工作，理解常见能力与限制。这一层是普及性的，绝大多数员工都应具备。培训重点不是原理，而是场景与边界，例如什么任务适合交给模型，什么任务必须自己判断。</p>
+<p>第二种是会判断，指能够评估模型输出的可靠性，识别误判类型，判断何时需要升级。这一层针对复核、审核、分析类岗位，需要案例训练与反馈机制。仅靠讲课无法形成这种能力，必须在真实案例中反复练习。</p>
+<p>第三种是会设计，指能够把业务问题转化为可执行的人机协同方案，设计流程、定义标准、安排兜底。这一层针对产品、项目经理与业务负责人，需要跨领域知识，也需要对组织约束的理解。</p>
+<p>三层素养的培养方式不同。会用靠普及与工具优化，会判断靠案例库与带教，会设计靠项目实践与复盘。用同一种培训覆盖三层，通常哪一层都做不好。</p>
+<p>（二）带教机制</p>
+<p>带教是能力建设中最有效也最容易被省略的部分。AI项目里的隐性知识极多，例如某类合同要看哪个条款、某种客户情绪需要如何回应、某个指标异常通常意味着什么。这些知识无法通过文档完整传递，只能在实践中传递。</p>
+<p>可行的带教结构是"一师一徒一案例"。师傅带着徒弟处理一批真实案例，边做边讲判断依据；徒弟独立处理下一批，师傅复核并指出偏差；两人共同复盘，把新发现的判断规则写进案例库。一个周期大约四到六周，能传递相当一部分隐性知识。</p>
+<p>带教需要制度支持。师傅的时间要计入工作量，不能视为额外负担；徒弟的学习期要有明确的考核标准，避免无限延长；带教成果要进入师傅的评价，否则没人愿意投入。</p>
+<p>（三）能力评估与认证</p>
+<p>能力评估的目的不是排名，而是识别缺口。可以用"场景测试"代替笔试：给出一批真实案例，要求受训者做出判断并说明依据，由两名评审独立评分。这种方式比选择题更能反映实际能力。</p>
+<p>认证可以分为三级，对应三种素养。一级认证证明会使用工具，二级证明能独立复核，三级证明能设计方案。认证与岗位、薪酬挂钩，但不作为唯一标准，避免员工为了证书而学习。</p>
+<p>认证需要定期复审。AI能力变化快，两年前有效的判断标准可能已经过时。复审周期建议为一年，复审内容以新版案例为主，避免用旧知识通过新考核。</p>
+<p>（四）学习时间的保障</p>
+<p>所有能力建设最终都受制于一个现实问题：人没有时间学习。项目压力大时，培训首先被取消；业务繁忙时，复盘首先被推迟。没有时间保障，任何培养计划都会落空。</p>
+<p>可行的安排是把学习时间制度化。例如每人每月固定四小时用于案例学习与复盘，写入工作计划，不可随意占用；每个项目阶段结束时的复盘会，计入项目工时，而不是占用员工休息时间。</p>
+<p>学习时间还要与业务节奏匹配。业务高峰期不适合安排深度培训，适合做短时案例分享；业务平稳期可以安排系统训练。把培训安排在错误的时间，参与度会很低，效果也差。</p>
+<p>激励与能力建设到位之后，最后一个问题是路径。第十章讨论从试点到规模化的落地，给出成熟度评估、九十天计划与可复用的项目操作系统。</p>
+<p>一家保险公司的理赔审核团队，可以提供一个人效评价的实例。这个团队原本按件计酬，审核员每天处理多少单，就拿多少绩效。引入影像识别与条款比对模型之后，单量提升了近四成，但团队内部迅速出现两种行为：一部分人把所有判断交给模型，快速放行；另一部分人担心出错，逐条复核，单量反而下降。</p>
+<p>管理层最初的判断是"有人不适应新工具"，准备加强培训。培训做了两轮，问题依旧。真正的原因是考核没有变：按件计酬下，快速放行的人得到奖励，认真复核的人受到惩罚，培训改变不了激励。</p>
+<p>调整从三个地方开始。第一处是把考核单位从单量改为"判断密度加权后的有效处理量"，高风险案件的权重是普通案件的两倍，因为高风险案件需要更多判断。第二处是增加拦截质量指标，按"被复核确认为误判的拦截数"计分，提出异议但未被采纳的不计分。第三处是设置团队共同池，占奖金总额的两成，用于奖励知识贡献与带教。</p>
+<p>调整之后，行为开始变化。审核员愿意接高风险案件，因为权重更高；复核员愿意认真记录误判类型，因为拦截质量被认可；资深审核员开始带新人，因为带教进入共同池分配。</p>
+<p>新的问题也随之出现。有人开始挑案件，把低风险案件推给别人，自己专做高风险以拉高权重。团队因此增加了"分配由系统统一、个人不得挑单"的规则，并把高风险案件的处理质量单独统计。规则不是完美的，但它把漏洞补上了。</p>
+<p>半年后，团队的单量比引入模型前提升了约三成，误判率下降了，人员从十八人减到十五人，减下来的三人转岗到新场景的数据标注与案例整理。这个去向是提前说好的，所以在调整期间没有人隐瞒效率提升。</p>
+<p>这个例子说明，人效评价不是一个技术问题，而是一个行为设计问题。考核单位决定了人把注意力放在哪里，指标组合决定了行为是否被制衡，去向承诺决定了人是否愿意配合。</p>
+<p>它也说明"AI替代人"的叙事为何有害。如果那三个人没有被安排去向，团队会立刻学会两件事：不要显得太高效，不要把经验教给别人。企业得到的将是一个效率被隐藏的系统，而不是一个效率被释放的系统。</p>
+<p>判断密度虽然难以精确测量，但可以用岗位画像做粗略比较。画四个维度：每天需要做多少个有后果的判断，判断出错时的平均损失有多大，判断所需的信息有多少需要靠经验补足，判断结果是否被记录并可复核。四个维度的组合，大致能刻画一个岗位的价值含量。</p>
+<p>一个客服质检员的画像可能是：每天二十个判断，单次损失中等，信息较完整，结果被记录。一个高风险理赔复核员的画像可能是：每天八个判断，单次损失高，信息常缺失，结果必须留痕。后者的价值含量明显更高，即使处理数量不到前者的一半。</p>
+<p>画像的用途不是给岗位排等级，而是为薪酬与考核提供依据。如果两个岗位的画像差异很大，却用同一套计件标准，必然有一个被错估。错估的后果是人才流向容易计数的岗位，难以计数的岗位长期缺人。</p>
+<p>画像还可以用于招聘与培训。招聘时按画像寻找具备相应判断能力的人，比按学历或年限筛选更准确。培训时针对画像中的短板设计课程，例如信息缺失下的判断、边界案例的处置，比通用课程更有效。</p>
+<p>需要承认的是，画像带有主观判断，不同管理者对同一岗位的评分可能不同。解决办法是多人独立评分后取中位数，并每年复核一次。它与精确测量有距离，但比用工时或件数衡量更接近真实价值。</p>
+        </div>
+        <div class="ha-footer-nav">
+          <a href="ch08.html">← 上一页</a>
+          <a href="ch10.html">下一页 →</a>
+        </div>
+      </article>
+    </div>
+  </div>
+  
+<script>
+(function () {
+  var list = document.querySelector(".ha-chapters");
+  if (!list) return;
+  list.addEventListener("click", function (e) {
+    var btn = e.target.closest(".chap-toggle");
+    if (!btn || !list.contains(btn)) return;
+    var li = btn.closest("li[data-chap]");
+    if (!li) return;
+    var willOpen = !li.classList.contains("open");
+    list.querySelectorAll("li[data-chap]").forEach(function (item) {
+      item.classList.remove("open");
+      var b = item.querySelector(".chap-toggle");
+      if (b) b.setAttribute("aria-expanded", "false");
+    });
+    if (willOpen) {
+      li.classList.add("open");
+      btn.setAttribute("aria-expanded", "true");
+      // 第一次展开时进入该章正文；已在本章则只展开小节
+      var href = li.getAttribute("data-chap");
+      var file = (location.pathname.split("/").pop() || "");
+      if (href && file !== href && !file.endsWith("/" + href)) {
+        location.href = href;
+      }
+    }
+  });
+})();
+</script>
+
+</body>
+</html>

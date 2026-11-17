@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>第一章 重新理解AI组织中的项目 · AI组织项目管理升级</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,650&family=IBM+Plex+Mono:wght@400;500&family=Noto+Sans+SC:wght@400;500;700&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+:root {
+  --ha-bg: #f5f7fa;
+  --ha-sidebar: #f5f7fa;
+  --ha-ink: #0f1c2e;
+  --ha-muted: #6b7a8d;
+  --ha-line: #dde3eb;
+  --ha-active-bg: #e8eef5;
+  --ha-accent: #f5a623;
+  --ha-accent-ink: #1c1c1a;
+}
+body.hermes-book {
+  background: var(--ha-bg) !important;
+  color: var(--ha-ink);
+  font-size: 17px;
+  line-height: 1.75;
+}
+body.hermes-book a { color: #9a5b00; }
+body.hermes-book a:hover { color: var(--ha-ink); }
+.ha-shell {
+  display: grid;
+  grid-template-columns: 270px minmax(0, 1fr);
+  min-height: 100vh;
+}
+.ha-sidebar {
+  position: sticky;
+  top: 0;
+  align-self: start;
+  height: 100vh;
+  overflow-y: auto;
+  padding: 1.25rem 1rem 1.5rem;
+  border-right: 1px solid var(--ha-line);
+  background: var(--ha-sidebar);
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+.ha-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: var(--ha-muted) !important;
+  text-decoration: none;
+  font-size: 0.88rem;
+}
+.ha-back:hover { color: var(--ha-ink) !important; }
+.ha-toc-label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--ha-muted);
+  letter-spacing: 0.06em;
+  margin: 0.35rem 0 0.15rem;
+}
+.ha-chapters {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+.ha-chapters > li {
+  border-radius: 10px;
+}
+.ha-chapters .chap-toggle {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.35rem;
+  width: 100%;
+  padding: 0.55rem 0.7rem;
+  border: 0;
+  border-radius: 10px;
+  border-left: 3px solid transparent;
+  background: transparent;
+  color: var(--ha-muted);
+  font: inherit;
+  font-size: 0.9rem;
+  line-height: 1.35;
+  text-align: left;
+  cursor: pointer;
+}
+.ha-chapters .chap-toggle:hover {
+  background: rgba(15,28,46,0.04);
+  color: var(--ha-ink);
+}
+.ha-chapters > li.open > .chap-toggle,
+.ha-chapters > li.active > .chap-toggle {
+  background: var(--ha-active-bg);
+  color: var(--ha-ink);
+  font-weight: 600;
+  border-left-color: var(--ha-accent);
+}
+.ha-chapters .chap-caret {
+  flex: 0 0 auto;
+  width: 0.9rem;
+  margin-top: 0.15rem;
+  color: inherit;
+  opacity: 0.7;
+  transition: transform 0.15s ease;
+}
+.ha-chapters > li.open > .chap-toggle .chap-caret {
+  transform: rotate(90deg);
+}
+.ha-chapters .chap-subs {
+  list-style: none;
+  margin: 0 0 0.35rem;
+  padding: 0 0.4rem 0.25rem 1.35rem;
+  display: none;
+}
+.ha-chapters > li.open > .chap-subs {
+  display: grid;
+  gap: 0.12rem;
+}
+.ha-chapters .chap-subs a {
+  display: block;
+  padding: 0.32rem 0.55rem;
+  border-radius: 8px;
+  text-decoration: none;
+  color: var(--ha-muted);
+  font-size: 0.82rem;
+  line-height: 1.35;
+}
+.ha-chapters .chap-subs a:hover {
+  background: rgba(15,28,46,0.04);
+  color: var(--ha-ink);
+}
+.ha-chapters .chap-subs a.active {
+  color: var(--ha-ink);
+  font-weight: 600;
+  background: rgba(31,111,235,0.08);
+}
+.ha-side-foot {
+  margin-top: auto;
+  padding-top: 1rem;
+  border-top: 1px solid var(--ha-line);
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+.ha-side-foot a {
+  color: var(--ha-muted);
+  text-decoration: none;
+  font-size: 0.88rem;
+}
+.ha-side-foot a:hover { color: var(--ha-ink); }
+.ha-main {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+.ha-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.95rem 2rem;
+  border-bottom: 1px solid var(--ha-line);
+  background: rgba(245,247,250,0.92);
+  backdrop-filter: blur(8px);
+  position: sticky;
+  top: 0;
+  z-index: 5;
+}
+.ha-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  text-decoration: none;
+  color: var(--ha-ink);
+  font-weight: 650;
+  font-size: 0.98rem;
+  letter-spacing: -0.02em;
+}
+.ha-brand-mark {
+  width: 1.55rem;
+  height: 1.55rem;
+  border-radius: 6px;
+  background: #0f1c2e;
+  color: #fff;
+  display: grid;
+  place-items: center;
+  font-size: 0.62rem;
+  font-weight: 700;
+  font-family: var(--font-mono);
+}
+.ha-top-links {
+  display: flex;
+  gap: 1.1rem;
+  flex-wrap: wrap;
+}
+.ha-top-links a {
+  color: var(--ha-muted);
+  text-decoration: none;
+  font-size: 0.9rem;
+}
+.ha-top-links a:hover { color: var(--ha-ink); }
+.ha-article {
+  width: min(760px, calc(100% - 3rem));
+  margin: 0 auto;
+  padding: 1.75rem 0 4rem;
+}
+.ha-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  color: var(--ha-muted);
+  font-size: 0.88rem;
+  margin-bottom: 1.25rem;
+}
+.ha-meta a { color: inherit; text-decoration: none; }
+.ha-meta a:hover { color: var(--ha-ink); }
+.ha-chapter-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.9rem;
+  margin-bottom: 1.5rem;
+}
+.ha-chapter-num {
+  flex: 0 0 auto;
+  min-width: 2.4rem;
+  height: 2.4rem;
+  padding: 0 0.55rem;
+  border-radius: 8px;
+  background: var(--ha-accent);
+  color: var(--ha-accent-ink);
+  display: grid;
+  place-items: center;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+.ha-chapter-head h1 {
+  margin: 0;
+  font-size: clamp(1.55rem, 3vw, 2.15rem);
+  border: none;
+  padding: 0;
+  letter-spacing: -0.03em;
+}
+.ha-section-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.05rem;
+}
+.ha-section-list a {
+  display: block;
+  padding: 0.35rem 0.55rem;
+  border-radius: 8px;
+  text-decoration: none;
+  color: var(--ha-muted);
+  font-size: 0.82rem;
+  line-height: 1.35;
+}
+.ha-section-list a:hover {
+  background: rgba(15,28,46,0.04);
+  color: var(--ha-ink);
+}
+.ha-content h2 {
+  border-top: none;
+  padding-top: 0.2rem;
+  margin-top: 2.2rem;
+}
+.ha-content h2::before {
+  content: "";
+  display: block;
+  width: 2rem;
+  height: 3px;
+  background: var(--ha-accent);
+  margin-bottom: 0.75rem;
+  border-radius: 2px;
+}
+.ha-content p { margin: 0 0 1rem; text-indent: 2em; }
+.ha-sec-box {
+  margin: 0 0 1.75rem;
+  padding: 1rem 1.15rem 1.05rem;
+  border-radius: 12px;
+  background: #fff;
+  border: 1px solid var(--ha-line);
+}
+.ha-sec-box .label {
+  margin: 0 0 0.55rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--ha-muted);
+  letter-spacing: 0.04em;
+}
+.ha-sec-box ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.35rem;
+}
+.ha-sec-box a {
+  text-decoration: none;
+  color: var(--ha-ink);
+  font-size: 0.95rem;
+}
+.ha-sec-box a:hover { color: #1554b5; }
+.book-block {
+  margin: 0 0 1rem;
+  padding: 1rem 1.1rem 1.05rem;
+  border-radius: 12px;
+  background: #fff;
+  border: 1px solid var(--ha-line);
+}
+.book-block h2 {
+  margin: 0 0 0.55rem;
+  font-size: 1.05rem;
+  border: none;
+  padding: 0;
+  display: flex;
+  gap: 0.65rem;
+  align-items: baseline;
+}
+.book-block h2 a { text-decoration: none; color: var(--ha-ink); }
+.book-block h2 .num {
+  display: inline-grid;
+  place-items: center;
+  width: 1.85rem;
+  height: 1.85rem;
+  border-radius: 7px;
+  background: var(--ha-accent);
+  color: var(--ha-accent-ink);
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+.book-block ul.secs {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  color: #3a4652;
+  font-size: 0.92rem;
+  display: grid;
+  gap: 0.28rem;
+}
+.book-block ul.secs a { text-decoration: none; color: #3a4652; }
+.book-block ul.secs a:hover { color: #1554b5; }
+.figcap { color: var(--ha-muted); font-size: 0.9rem; text-align: center; margin: 0.25rem 0 1rem; }
+.table-wrap { overflow-x: auto; margin: 1rem 0; }
+.table-wrap table { width: 100%; border-collapse: collapse; font-size: 0.92rem; }
+.table-wrap th, .table-wrap td { border: 1px solid var(--ha-line); padding: 0.45rem 0.6rem; text-align: left; vertical-align: top; }
+.table-wrap th { background: #e8eef5; }
+.figure img { max-width: 100%; height: auto; border-radius: 10px; border: 1px solid var(--ha-line); }
+.ha-footer-nav {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 2.5rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--ha-line);
+}
+.ha-footer-nav a {
+  text-decoration: none;
+  color: var(--ha-ink);
+  font-weight: 600;
+}
+.ha-index-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+.ha-index-list a {
+  display: grid;
+  grid-template-columns: 2.6rem 1fr;
+  gap: 0.85rem;
+  align-items: center;
+  padding: 0.95rem 1rem;
+  border-radius: 12px;
+  text-decoration: none;
+  color: var(--ha-ink);
+  background: #fff;
+  border: 1px solid var(--ha-line);
+}
+.ha-index-list a:hover { border-color: #c5d0de; background: #f8fafc; }
+.ha-index-list .num {
+  width: 2.4rem;
+  height: 2.4rem;
+  border-radius: 8px;
+  background: var(--ha-accent);
+  color: var(--ha-accent-ink);
+  display: grid;
+  place-items: center;
+  font-family: var(--font-mono);
+  font-weight: 700;
+}
+.ha-author {
+  margin: 0 0 1.5rem;
+  padding: 1.1rem 1.2rem;
+  border-radius: 12px;
+  background: #fff;
+  border: 1px solid var(--ha-line);
+}
+.ha-author h2 {
+  margin: 0 0 0.45rem;
+  font-size: 1.05rem;
+  border: none;
+  padding: 0;
+}
+.ha-author p { margin: 0; color: #3a4652; font-size: 0.98rem; }
+.ha-cover-thumb {
+  display: inline-block;
+  line-height: 0;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid var(--ha-line);
+  margin: 0 0 1.25rem;
+}
+.ha-cover-thumb img {
+  width: min(240px, 100%);
+  height: auto;
+  display: block;
+}
+@media (max-width: 920px) {
+  .ha-shell { grid-template-columns: 1fr; }
+  .ha-sidebar {
+    position: static;
+    height: auto;
+    max-height: none;
+    border-right: none;
+    border-bottom: 1px solid var(--ha-line);
+  }
+  .ha-article { width: min(760px, calc(100% - 2rem)); }
+  .ha-topbar { padding: 0.85rem 1rem; }
+}
+</style>
+</head>
+<body class="hermes-book">
+  <div class="ha-shell">
+    <aside class="ha-sidebar" aria-label="目录">
+      <a class="ha-back" href="index.html">← 返回目录</a>
+      <div class="ha-toc-label">目录</div>
+      <ul class="ha-chapters">
+        <li data-chap="ch00.html"><button type="button" class="chap-toggle" aria-expanded="false"><span class="chap-caret" aria-hidden="true">▸</span><span>前言</span></button><ul class="chap-subs"><li><a href="ch00.html#0-1-这本书想解决什么问题">0.1 这本书想解决什么问题</a></li><li><a href="ch00.html#0-2-写给谁看">0.2 写给谁看</a></li><li><a href="ch00.html#0-3-三个基本判断">0.3 三个基本判断</a></li><li><a href="ch00.html#0-4-全书结构">0.4 全书结构</a></li><li><a href="ch00.html#0-5-关于案例与数据的说明">0.5 关于案例与数据的说明</a></li><li><a href="ch00.html#0-6-一个提醒">0.6 一个提醒</a></li></ul></li><li class="open active" data-chap="ch01.html"><button type="button" class="chap-toggle" aria-expanded="true"><span class="chap-caret" aria-hidden="true">▸</span><span>第一章 重新理解AI组织中的项目</span></button><ul class="chap-subs"><li><a href="ch01.html#1-1-从数字化项目到AI原生项目">1.1 从数字化项目到AI原生项目</a></li><li><a href="ch01.html#1-2-项目失败的常见归因为何失效">1.2 项目失败的常见归因为何失效</a></li><li><a href="ch01.html#1-3-人机协同如何改写交付单元">1.3 人机协同如何改写交付单元</a></li><li><a href="ch01.html#1-4-本书框架与使用方法">1.4 本书框架与使用方法</a></li></ul></li><li data-chap="ch02.html"><button type="button" class="chap-toggle" aria-expanded="false"><span class="chap-caret" aria-hidden="true">▸</span><span>第二章 AI时代的项目战略与组合管理</span></button><ul class="chap-subs"><li><a href="ch02.html#2-1-从项目清单到能力与价值组合">2.1 从项目清单到能力与价值组合</a></li><li><a href="ch02.html#2-2-什么样的事值得做成项目">2.2 什么样的事值得做成项目</a></li><li><a href="ch02.html#2-3-AI投入的优先级与止损机制">2.3 AI投入的优先级与止损机制</a></li><li><a href="ch02.html#2-4-组合看板-战略对齐与资源再平衡">2.4 组合看板：战略对齐与资源再平衡</a></li></ul></li><li data-chap="ch03.html"><button type="button" class="chap-toggle" aria-expanded="false"><span class="chap-caret" aria-hidden="true">▸</span><span>第三章 重新定义项目成功</span></button><ul class="chap-subs"><li><a href="ch03.html#3-1-从按期上线到可验证的业务结果">3.1 从按期上线到可验证的业务结果</a></li><li><a href="ch03.html#3-2-过程指标-结果指标与学习指标">3.2 过程指标、结果指标与学习指标</a></li><li><a href="ch03.html#3-3-AI项目的验收口径怎么定">3.3 AI项目的验收口径怎么定</a></li><li><a href="ch03.html#3-4-失败-试点与规模化的判定标准">3.4 失败、试点与规模化的判定标准</a></li></ul></li><li data-chap="ch04.html"><button type="button" class="chap-toggle" aria-expanded="false"><span class="chap-caret" aria-hidden="true">▸</span><span>第四章 项目组织设计：角色、责任与决策权</span></button><ul class="chap-subs"><li><a href="ch04.html#4-1-产品-业务-数据-算法-工程如何编队">4.1 产品、业务、数据、算法、工程如何编队</a></li><li><a href="ch04.html#4-2-人机分工与关键决策分级">4.2 人机分工与关键决策分级</a></li><li><a href="ch04.html#4-3-项目经理的新定位-从进度官到协同设计师">4.3 项目经理的新定位：从进度官到协同设计师</a></li><li><a href="ch04.html#4-4-责任域-升级路径与决策台账">4.4 责任域、升级路径与决策台账</a></li></ul></li><li data-chap="ch05.html"><button type="button" class="chap-toggle" aria-expanded="false"><span class="chap-caret" aria-hidden="true">▸</span><span>第五章 需求与范围：把不确定变成可管理</span></button><ul class="chap-subs"><li><a href="ch05.html#5-1-AI需求为什么总是-看起来清楚-做起来漂移">5.1 AI需求为什么总是"看起来清楚、做起来漂移"</a></li><li><a href="ch05.html#5-2-问题定义-约束边界与不可自动化清单">5.2 问题定义、约束边界与不可自动化清单</a></li><li><a href="ch05.html#5-3-范围分层-MVP-增强版与禁区">5.3 范围分层：MVP、增强版与禁区</a></li><li><a href="ch05.html#5-4-变更控制-允许探索-但不允许无底线膨胀">5.4 变更控制：允许探索，但不允许无底线膨胀</a></li></ul></li><li data-chap="ch06.html"><button type="button" class="chap-toggle" aria-expanded="false"><span class="chap-caret" aria-hidden="true">▸</span><span>第六章 计划与交付：适配AI工作方式的节奏</span></button><ul class="chap-subs"><li><a href="ch06.html#6-1-为什么传统瀑布和纯敏捷都容易失灵">6.1 为什么传统瀑布和纯敏捷都容易失灵</a></li><li><a href="ch06.html#6-2-双轨节奏-探索轨与交付轨">6.2 双轨节奏：探索轨与交付轨</a></li><li><a href="ch06.html#6-3-里程碑设计-数据-模型-流程-治理四条线">6.3 里程碑设计：数据、模型、流程、治理四条线</a></li><li><a href="ch06.html#6-4-人机并行下的依赖管理与缓冲策略">6.4 人机并行下的依赖管理与缓冲策略</a></li></ul></li><li data-chap="ch07.html"><button type="button" class="chap-toggle" aria-expanded="false"><span class="chap-caret" aria-hidden="true">▸</span><span>第七章 质量、风险与合规治理</span></button><ul class="chap-subs"><li><a href="ch07.html#7-1-AI项目的质量不只是-测通了">7.1 AI项目的质量不只是"测通了"</a></li><li><a href="ch07.html#7-2-模型风险-数据风险-流程风险与责任风险">7.2 模型风险、数据风险、流程风险与责任风险</a></li><li><a href="ch07.html#7-3-验证机制-抽样-回测-人工复核与回滚">7.3 验证机制：抽样、回测、人工复核与回滚</a></li><li><a href="ch07.html#7-4-隐私-安全-伦理与审计如何嵌入交付">7.4 隐私、安全、伦理与审计如何嵌入交付</a></li></ul></li><li data-chap="ch08.html"><button type="button" class="chap-toggle" aria-expanded="false"><span class="chap-caret" aria-hidden="true">▸</span><span>第八章 协作机制：跨部门真正跑起来</span></button><ul class="chap-subs"><li><a href="ch08.html#8-1-AI项目协作失败的组织根因">8.1 AI项目协作失败的组织根因</a></li><li><a href="ch08.html#8-2-协同界面-输入-审核-例外-交接">8.2 协同界面：输入、审核、例外、交接</a></li><li><a href="ch08.html#8-3-会议-文档-智能体与知识沉淀怎么配">8.3 会议、文档、智能体与知识沉淀怎么配</a></li><li><a href="ch08.html#8-4-冲突处理-业务目标-技术可行与合规底线">8.4 冲突处理：业务目标、技术可行与合规底线</a></li></ul></li><li data-chap="ch09.html"><button type="button" class="chap-toggle" aria-expanded="false"><span class="chap-caret" aria-hidden="true">▸</span><span>第九章 人效与激励：让团队愿意用AI交付</span></button><ul class="chap-subs"><li><a href="ch09.html#9-1-从工时核算到判断密度与交付质量">9.1 从工时核算到判断密度与交付质量</a></li><li><a href="ch09.html#9-2-AI贡献如何进入项目评价">9.2 AI贡献如何进入项目评价</a></li><li><a href="ch09.html#9-3-项目经理-专家与执行角色的差异化激励">9.3 项目经理、专家与执行角色的差异化激励</a></li><li><a href="ch09.html#9-4-能力建设-项目团队的AI素养与带教机制">9.4 能力建设：项目团队的AI素养与带教机制</a></li></ul></li><li data-chap="ch10.html"><button type="button" class="chap-toggle" aria-expanded="false"><span class="chap-caret" aria-hidden="true">▸</span><span>第十章 落地路径：从试点到规模化升级</span></button><ul class="chap-subs"><li><a href="ch10.html#10-1-成熟度评估与改造切入点选择">10.1 成熟度评估与改造切入点选择</a></li><li><a href="ch10.html#10-2-90天升级计划与一年演进路线">10.2 90天升级计划与一年演进路线</a></li><li><a href="ch10.html#10-3-可复用的项目操作系统">10.3 可复用的项目操作系统</a></li><li><a href="ch10.html#10-4-典型场景案例与避坑清单">10.4 典型场景案例与避坑清单</a></li></ul></li><li data-chap="appendix.html"><button type="button" class="chap-toggle" aria-expanded="false"><span class="chap-caret" aria-hidden="true">▸</span><span>附录</span></button><ul class="chap-subs"><li><a href="appendix.html#A-1-AI项目管理工具箱">A.1 AI项目管理工具箱</a></li><li><a href="appendix.html#A-2-角色职责-决策分级与验收模板">A.2 角色职责、决策分级与验收模板</a></li><li><a href="appendix.html#A-3-自检清单与复盘表">A.3 自检清单与复盘表</a></li><li><a href="appendix.html#A-4-使用说明与常见误用">A.4 使用说明与常见误用</a></li></ul></li>
+      </ul>
+      <div class="ha-side-foot">
+        <a href="cover.html">封面</a>
+        <a href="index.html">目录</a>
+      </div>
+    </aside>
+    <div class="ha-main">
+      <header class="ha-topbar">
+        <a class="ha-brand" href="index.html">
+          <span class="ha-brand-mark">PM</span>
+          AI组织项目管理升级
+        </a>
+        <div class="ha-top-links">
+          <a href="cover.html">封面</a>
+          <a href="index.html">目录</a>
+        </div>
+      </header>
+      <article class="ha-article">
+        <div class="ha-meta">
+          <div><a href="index.html">目录</a> / 第01章</div>
+          <div>赵登琴 著</div>
+        </div>
+        <div class="ha-chapter-head">
+          <div class="ha-chapter-num">01</div>
+          <h1>第一章 重新理解AI组织中的项目</h1>
+        </div>
+        <nav class="ha-sec-box" aria-label="本章小节">
+          <div class="label">本章小节</div>
+          <ul>
+<li><a href="#1-1-从数字化项目到AI原生项目">1.1 从数字化项目到AI原生项目</a></li><li><a href="#1-2-项目失败的常见归因为何失效">1.2 项目失败的常见归因为何失效</a></li><li><a href="#1-3-人机协同如何改写交付单元">1.3 人机协同如何改写交付单元</a></li><li><a href="#1-4-本书框架与使用方法">1.4 本书框架与使用方法</a></li>
+          </ul>
+        </nav>
+        <div class="ha-content">
+<p>一家大型零售企业在2025年做过一次内部复盘。它的智能补货项目在技术评审中拿到了很高的分数，模型在历史数据上的预测准确率比原有规则高出十几个百分点，项目按计划上线，验收文档齐全。半年之后，区域仓的库存周转没有改善，缺货率反而上升。督导询问原因，店长给出的回答很朴素：系统每天给出的建议量和他们多年的订货经验冲突，没人敢照着下单，于是大家仍旧按老办法订货，只在月底把系统建议当作参考报表打印出来交差。</p>
+<p>这类项目并不罕见。MIT的Project NANDA在2025年发布的《The GenAI Divide》报告里给出过一个刺眼的数字，按组织口径，约九成五的企业从生成式AI投资中没有获得可衡量的回报。报告同时给出另一组口径，在定制化的任务型工具里，被评估过的约占六成，进入试点的约占两成，真正走到生产部署的约为二十分之一。Gartner在2025年7月预测，到2027年底超过四成的代理型AI项目会因成本攀升、价值不清和风险控制不足而被取消。这些数字的基数各不相同，不能简单相加……但它们指向同一个现象：技术能力在快速进步，项目成功率却没有同步上升。</p>
+<p>把原因归为"模型还不够好"是最省事的解释，也最容易误导。前面那家零售企业的模型并不差，它失败在别的地方。系统给出的是概率建议，店长需要的是可以承担责任的指令；算法团队交付的是一个预测值，业务侧需要的是一个能嵌进订货流程、遇到异常能退回人工的机制。项目的交付物在形式上完成了，在功能上却从未真正进入工作流。</p>
+<p>这本书要处理的就是这段落差。它不讨论如何训练更好的模型，而讨论当交付物从"人做的任务"变成"人与模型共同完成的任务"之后，项目管理需要改哪些假设、换哪些工具、重建哪些责任关系。</p>
+<h2 id="1-1-从数字化项目到AI原生项目">1.1 从数字化项目到AI原生项目</h2>
+<p>（一）交付物的性质发生了变化</p>
+<p>数字化项目的典型交付物是一套确定性的系统。需求可以被穷举，规则可以被写死，输入相同则输出相同，验收的方式是核对功能清单。ERP上线、流程审批系统改造、报表平台迁移，都属于这一类。它们的复杂度很高，但复杂度是"可分解的复杂"，只要拆得足够细、接口定义得足够清楚，工程上总能收敛。</p>
+<p>AI原生项目的交付物不是一套规则，而是一个带有概率性的判断能力。同样一段客服对话，模型这次判为投诉、下次可能判为咨询；同样一张票据，光照和角度变化就会改变识别结果。交付物的行为依赖数据分布，而数据分布会随业务变化漂移。项目团队交付的不是"已经确定的答案"，而是"在给定条件下达到某个水平的判断能力"，以及围绕这个能力的一整套兜底安排。</p>
+<p>这个差别带来的第一个后果是验收对象变了。过去验收系统，核对的是"有没有这个功能"；现在验收一个AI能力，必须回答"在什么分布上、达到什么水平、错了以后怎么办"。三个问题缺一个，验收就无法成立。很多项目在验收表上写着"准确率达到九成五"，却没有写清这个九成五是在哪个样本集上、由谁标注、错判的代价如何分布。这样的验收条款签了字，也只是把争议推迟到上线之后。</p>
+<p>错误代价的不对称，是AI交付里最容易被忽略的经济学。医疗影像筛查漏掉一个病灶与多标一个疑似，代价相差几个数量级。反欺诈模型误拦一笔正常交易，损失的是一位客户的信任，放过一笔欺诈，损失的可能是几十万现金。同一个准确率数字，放在不同的代价结构里，最优的阈值相差很远。项目组如果不把代价结构写进验收，模型调优就只能凭感觉选阈值，业务侧也很难判断这个系统到底能不能用。</p>
+<p>合理的做法是把验收写成一组带条件的承诺：在什么样的输入分布下，漏判率不超过多少，误判率不超过多少，单次误判的平均处置成本不超过多少，超出边界时由谁在多久之内接管。这样的条款不优雅，却可以被检验，也可以在出问题时定位到底哪一条承诺没有被兑现。</p>
+<p>（二）验收从一次判定变成持续观测</p>
+<p>数字化项目的验收有一个明确的时间点。系统切换完成、数据迁移核对无误、用户培训结束，项目就可以关账，之后进入运维期。AI项目的验收更像一段观察期。模型上线只是开始，真实的输入分布、真实的用户行为、真实的异常类型都会在上线后陆续出现，前三个月的表现往往与测试环境差别很大。</p>
+<p>这意味着项目管理必须为"上线后仍然需要投入"预留资源与责任。很多企业在立项时把预算全部押在开发阶段，上线之后没有人力做监控、没有机制处理误判、没有权限做模型调整，项目在纸面上成功，在运营上搁浅。合理的做法是在立项时就把观察期写进计划，明确观察期的长度、观测指标、责任人，以及观察期内允许的调整范围。观察期不是拖延交付的借口，它是AI交付结构的一部分。</p>
+<p>（三）边际成本结构不同于软件复制</p>
+<p>一套软件做好之后，复制给第二个业务部门的边际成本很低。AI能力不是这样。模型可以复制，数据管道、标注规则、业务口径、异常处理流程往往要重做。把A事业部效果不错的合同审查助手搬到B事业部，第一件要做的事不是部署模型，而是重新对齐两边的合同类型、审批权限和风险偏好。</p>
+<p>这解释了为什么AI项目常常"一单一议"，也解释了为什么企业级AI的投入产出比难以线性外推。项目管理的含义是：不要把单点成功直接当作可复制能力，必须在项目设计阶段就区分"这一次交付"与"这一类能力"。前者关注本场景达标，后者关注接口、数据规范、评测集和运营流程能否沉淀成可复用的组件。不做这个区分，企业会重复支付同样的学习成本。</p>
+<p>（四）组织的吸收能力成为交付变量</p>
+<p>同样的模型能力，放进不同组织，产出差别可能远超模型本身的差距。原因在于组织吸收新能力需要付出额外成本，这部分成本过去很少被计入项目计划。</p>
+<p>吸收成本的第一种表现是口径对齐。财务口径里的"逾期"与业务口径里的"逾期"常常不是一回事，销售说的"活跃客户"与数据仓库里的"活跃"定义也可能相差三成。模型不会自动理解这些差别，它只会学习数据里呈现的模式。项目组如果不在早期把这些定义逐条对齐，后面每一次指标异常都会变成一场关于定义的争论，工期在争论中消耗。</p>
+<p>第二种表现是操作习惯迁移。一个人用了十年Excel，突然要他在系统里逐条确认模型建议，效率在短期内一定下降。这段下降期如果没有被预判，业务侧会得出"新系统更麻烦"的结论，进而消极使用。有效的项目会在切换期安排双轨运行、设置过渡指标、安排现场支持，把这段摩擦成本显性化。</p>
+<p>第三种表现是管理注意力的分配。AI项目需要业务负责人定期看误判样本、参与边界讨论，这些工作不产生即时产出，却决定项目能否收敛。如果业务负责人被日常经营占满，只在评审会上露面，项目就失去了最重要的判断输入。立项时把业务负责人的参与时间写进计划，比在章程里写一句"足够重视"有用得多。</p>
+<p>吸收能力不是软性条件，它可以直接改变项目周期。一个吸收能力弱的组织，即使拿到成熟方案，也会在接口、习惯与注意力三处反复消耗；一个吸收能力强的组织，用不够完美的模型也能通过流程设计把结果做出来。项目管理的任务之一，就是在立项阶段评估这种能力，并据此调整节奏与预期，而不是把差距留到上线后由业务承担。</p>
+<p>把三类差别放在一起看，AI原生项目与数字化项目的分野就清楚了。</p>
+<div class="table-wrap"><table>
+<tr><th>比较维度</th><th>数字化项目</th><th>AI原生项目</th></tr>
+<tr><td>交付物</td><td>确定性系统与功能</td><td>概率性判断能力加兜底机制</td></tr>
+<tr><td>验收方式</td><td>节点验收、功能核对</td><td>观察期验收、分布与代价核对</td></tr>
+<tr><td>复制成本</td><td>复制边际成本低</td><td>每个场景需重新对齐数据与口径</td></tr>
+<tr><td>主要风险</td><td>工期、集成、需求蔓延</td><td>分布漂移、误判代价、责任真空</td></tr>
+<tr><td>成功标志</td><td>按期上线并稳定运行</td><td>业务指标改变且可持续</td></tr>
+</table></div>
+<p>这张表不是要把两类项目对立起来。数字化项目仍然占据企业IT投入的大头，它们的方法论也不会失效。问题在于，当企业把AI塞进原有的项目管理模板，用同一套立项书、同一套里程碑、同一套验收标准去管，管理的假设与交付的性质就错位了。</p>
+<h2 id="1-2-项目失败的常见归因为何失效">1.2 项目失败的常见归因为何失效</h2>
+<p>（一）"需求不清"解释不了价值不落地</p>
+<p>复盘会上最常听到的第一句话是需求没讲清楚。这个归因在传统项目里通常成立，在AI项目里却往往是事后追认。真实的立项过程常常相反：需求写得很具体，甚至具体到"每天自动生成客户流失预警名单，准确率不低于85%"，业务方签了字，技术方也认了。问题出在这份需求描述的是输出物，不是业务动作。名单生成之后由谁看、看了做什么、做完之后客户是否真的被留住，这些环节没有进入需求。</p>
+<p>于是项目组把全部注意力放在达成准确率上，业务侧则在等一个"能直接用的东西"。双方都在按合同办事，价值却在接口处蒸发。把这类失败归为需求不清，会让人误以为再写细一点就能解决；真正需要补的是从输出物到业务动作的链路设计。</p>
+<p>输出物需求与动作需求的差别，可以用一个具体场景说明。客户经理收到一份流失预警名单，这是输出物。名单上写着某客户未来三个月流失概率较高，客户经理看完之后能做什么？如果他没有权限提供折扣、不知道该用什么话术、也不清楚挽留成本的上限，这份名单只能变成一条已读消息。动作需求会写成：对高风险客户，客户经理在两周内完成一次回访，可以使用A类权益，单客成本不超过某个额度，回访结果回填系统；如果客户明确表示要转网，转入挽留专员处理。前者描述一个文件，后者描述一条有权限、有预算、有时限、有后手的路径。</p>
+<p>把需求写到动作层，会立刻暴露一批此前没人注意的约束。权益预算谁批、话术谁定、回填字段谁维护、转接规则谁确认，每一项都可能牵出别的部门。这就是为什么很多项目在立项时看起来简单，进入实施后突然长出一堆依赖。不是需求变了，是原先只写了输出物，没有把动作链路上的约束摆到台面上。</p>
+<p>（二）"能力不足"解释不了流程不接</p>
+<p>第二种常见归因是团队能力不行，模型效果达不到业务要求。有些项目确实如此，但更多项目在技术指标上已经达标，仍然无法产生结果。某银行的反欺诈模型在离线测试中把召回率提高了近二十个百分点，上线后拦截量却远低于预期。原因不在模型，而在流程：拦截动作需要网点柜员发起，柜员担心误拦引发客户投诉，需要主管授权，授权又要填一张纸质说明。模型给出的信号越强，柜员的操作负担越重，于是大家宁可放过。</p>
+<p>这是典型的流程不接。技术能力只有在流程里被承认、被执行、被兜底，才会变成业务结果。项目管理如果只盯着模型指标，就会把一个流程改造问题误判为技术攻关问题，投入越多，偏差越大。</p>
+<p>流程不接还有一层更隐蔽的原因，是权限没有随之调整。模型能识别风险，但没有权力处置风险；系统能生成建议，但没有权限改变业务规则。项目组往往默认"系统做好了，业务自然会用"，而业务侧的实际处境是，使用新系统意味着承担新的责任，却不具备相应的处置权限。于是最理性的选择是不用或者少用。要让AI能力真正进入流程，必须同步给出三样东西：可执行的动作、可支配的资源、可追溯的授权。缺任何一样，流程都会在最后一米停住。</p>
+<p>（三）"执行力"解释不了责任真空</p>
+<p>第三种归因最含糊，叫做执行不到位。它通常出现在跨部门项目里，业务、技术、数据三方都认为自己做了该做的事，结果却没人对最终结果负责。AI项目很容易产生这种真空，因为它的责任链条比传统项目长：数据质量由数据团队负责，模型效果由算法团队负责，业务流程由业务部门负责，系统稳定性由IT负责，合规由法务与安全负责。每一段都有主人，整条链却没有主人。</p>
+<p>一旦出现误判事故，链条上的每一段都能证明自己没错：数据团队说标注规范是业务给的，算法团队说训练数据就是这样，业务部门说系统是技术做的，技术说需求是业务提的。责任在接口处消失，比在任何单点上出问题都更致命。后文会把这个问题拆成责任域设计来处理，这里只需要记住一个判断：当一个AI项目出现问题时，如果第一反应是找某一方的能力缺陷，通常说明项目缺少跨链的责任人。</p>
+<p>（四）三种归因共享一个错误前提</p>
+<p>需求不清、能力不足、执行不到位，这三种说法背后有一个共同的假设：项目是一个封闭的转化过程，输入确定，过程可控，输出可验收。只要每个环节都做到位，结果自然会出现。传统工程大体符合这个假设，AI项目不符合。</p>
+<p>AI项目的输入端本身就带着不确定性。业务方说不清自己需要什么，不是因为表达能力的欠缺，而是因为需求依赖于模型能力边界，边界未被探索之前，需求只能是模糊的。项目的过程也不可控，模型效果不由投入单独决定，数据里是否存在可学习的信号，往往要试过才知道。输出更不是一次性可验收的，它需要在一段时间的真实运行中才能被判断。</p>
+<p>在这样的结构里，把失败归结为某个环节做得不够，等于要求人们在一个不确定的过程里提供确定性的承诺。承诺越具体，越容易在事后变成追责依据，团队于是学会了两件事：立项时把目标写得模糊，交付时把责任推给对方。表面上看是执行力问题，实质上是管理假设与任务性质不匹配所导致的防御性行为。</p>
+<p>一个更可用的归因框架，是把失败分为可控失败与不可控失败。可控失败指计划、责任、流程设计上的缺陷，这类失败必须追责并修正。不可控失败指在探索过程中暴露出的客观限制，例如数据不足、任务本身不适合自动化、监管不允许，这类失败应当被当作有价值的信息，用来调整组合，而不是用来惩罚团队。混淆这两类失败，组织就会同时失去两种能力：既不能修正真正的问题，也不愿再承担探索的风险。</p>
+<p>三种归因之所以失效，是因为它们都默认项目仍然是一个"把确定需求转化为确定交付"的过程，失败必然发生在某一个环节。AI项目的失败更多发生在环节之间，发生在假设没有被验证、接口没有被设计、责任没有被承接的地方。</p>
+<h2 id="1-3-人机协同如何改写交付单元">1.3 人机协同如何改写交付单元</h2>
+<p>（一）交付单元从任务变成三元组</p>
+<p>传统项目管理的拆解单位是任务。一个任务有明确的输入、明确的输出、明确的负责人和可估算的工时。人机协同之后，最小可管理的单位变成了一个三元组：任务本身、承担判断的模型、负责复核与兜底的人。三者缺一，交付就不完整。</p>
+<p>以一份供应商资质审核为例。任务是判断这家供应商是否满足准入条件；模型负责从证照、财报和公开信息中抽取要点并给出初判；人负责处理模型标记为存疑的案例，并对最终结论签字。项目的进度不由"模型开发完了"决定，而由"这个三元组能稳定跑起来"决定。审核员是否愿意使用、存疑案例的比例是否可承受、签字责任是否清晰，都影响交付是否能真正发生。</p>
+<p>这个变化直接改写了工作量估算。过去估的是开发工时，现在还要估复核工时、异常处理工时和口径对齐工时。很多项目在预算里只算前者，结果上线后发现复核量远超预期，团队被日常运营拖住，没有余力迭代，项目进入低水平循环。</p>
+<p>复核容量需要在设计阶段做算术。假如系统每天产生一千条建议，模型自评置信度低的占两成，这百分之二百条必须人工判断；高置信度的八百条按抽样规则再抽百分之五复核，约四十条；加上被业务方主动质疑而升级的案例，按每天三十条估算，一名复核员日均处理一百二十条，至少需要三到四名全职复核人员。这个数字如果不进入预算，项目就会在"看起来上线了"之后持续挤占其他资源，或者因为复核不过来而被动提高自动放行比例，隐性风险上升。</p>
+<p>人机配比不是越高越好，也不是越低越好。配比过高，人力成本吃掉效率收益；配比过低，错误进入业务的速度快过修正速度，信任崩塌。合适的配比与该场景的错误代价、模型校准程度、异常可识别性有关。项目应该在上线初期偏向保守，等积累足够的误判分布之后，再逐步调整自动放行的比例，而不是一开始就把配比定死。</p>
+<p>（二）返工路径不再是线性的</p>
+<p>传统项目的返工路径基本是线性的：测试发现问题，退回开发修改，重新测试。AI项目的返工可能指向四个不同方向。效果不达标，可能要去补数据；数据补不上，可能要改任务定义，把判断范围缩小；范围缩小后业务价值不足，可能要重新设计流程；流程改动又可能触发合规审查。返工方向不确定，意味着项目计划不能是一条关键路径，而必须保留多条并行的可能性。</p>
+<p>管理上的应对不是把计划做得更细，而是把"什么情况下走哪条返工路径"提前写清楚。哪一种指标不达标时必须停下补数据，哪一种情况下应当果断缩小范围，哪一种情况下应当终止。这些判断如果留到问题出现时再讨论，讨论本身就会消耗数周，团队在等待中失去动力。</p>
+<p>返工路径不确定，还意味着项目的评审方式要改。传统评审看的是"完成百分比"，AI项目更该看的是"不确定性减少了多少"。上一轮评审时团队还不知道模型在长尾案例上的表现，这一轮知道了；上一轮不知道业务方是否接受自动放行，这一轮做了灰度有了答案。这些进展不会体现在百分比上，却实实在在提高了一次成功的概率。如果评审只认进度条，团队就会倾向于先做容易看到进度的事，把真正的不确定性留到最后。</p>
+<p>（三）人的角色从执行者变成判断者</p>
+<p>在人机协同的交付里，人的价值越来越集中在判断上：判断任务是否值得自动化，判断模型输出是否可以采信，判断异常是否超出预设边界，判断一次失败是偶发还是系统性偏差。这些判断无法被工时衡量，却直接决定项目成败。</p>
+<p>这也带来了一个新的管理难题。判断的质量难以在短期内观测，容易被"看起来忙碌"替代。一个复核员每天处理三百条记录，未必比处理八十条并发现两类系统性误判的人更有价值。第九章会专门讨论评价问题，此处先指出：如果项目管理制度仍然只承认工时与产出数量，人就会把精力放在容易计数的动作上，判断能力反而退化。</p>
+<p>（四）时间结构从工期转为学习周期</p>
+<p>传统项目的时间观是工期。工期由工作量除以资源推算，压缩工期的办法是加人、并行、减少范围。AI项目也谈工期，但真正决定它能否成功的是学习周期：从提出问题到获得可用信号、从试错到找到边界、从上线到稳定运行，需要经历多少个完整的学习循环。</p>
+<p>一个学习循环通常包含四件事：设计一次可验证的尝试，拿到真实反馈，判断反馈说明什么，据此调整下一轮假设。循环的长度取决于反馈的速度。数据准备要三个月、评测集要两个月、上线灰度要一个月，一个循环就接近半年，一年只能走两轮。如果两轮之内没有找到有效信号，项目在时间上就已经失败了，无论团队多努力。</p>
+<p>这个视角改变了资源投入的重点。与其在开发阶段堆人，不如压缩反馈周期：提前准备小规模的真实样本，用人工复核代替完整标注，在沙盒里先跑通业务动作再谈模型优化。把循环从半年压到六周，同样的时间可以多走四轮，试错的机会成倍增加。很多被认为"技术难度大"的项目，实际难度在于反馈太慢，团队没有足够次数去逼近可行解。</p>
+<p>它也改变了里程碑的定义方式。以交付物为节点的里程碑，容易在节点完成后失去方向；以学习结果为节点的里程碑，要求每个阶段结束时必须回答"我们学到了什么、下一个假设是什么"。后一种里程碑看起来不那么体面，因为它允许阶段结论是"这条路不通"，但它更接近AI项目的真实进展。</p>
+<h2 id="1-4-本书框架与使用方法">1.4 本书框架与使用方法</h2>
+<p>（一）五层框架</p>
+<p>全书按五个层次展开，每一层解决一类错位。</p>
+<p>战略层处理"做什么"的问题，回答AI预算应该如何分配、什么样的事值得立项、什么时候应当止损。成功定义层处理"什么算成"的问题，把验收从上线动作改成可验证的业务结果。组织层处理"谁来决定、谁来承担"的问题，重新设计编队、决策分级与责任域。交付层处理"怎么推进"的问题，覆盖需求范围、节奏计划、质量治理与跨部门协作。长效层处理"如何持续"的问题，涉及人效激励、能力建设与规模化路径。</p>
+<p>五个层次不是严格串行的阶段，而是相互约束的系统。战略选错了场景，再精细的交付管理也只能更快地失败；成功定义含糊，组织设计就会退化为争权；激励错位，前四层设计得再好也会被执行层消解。</p>
+<p>（二）三条阅读路径</p>
+<p>高层管理者可以按第二章、第三章、第四章、第十章的次序阅读，先解决组合选择、验收口径与责任归属，再考虑落地节奏。PMO与项目经理建议从第一章顺读到第七章，把需求、计划、治理三章作为工具手册反复查用。业务负责人可以先读第三章、第五章、第八章，理解自己在验收、范围与协作中的具体职责，再回到组织章节确认决策权限。</p>
+<p>书中的案例均经过脱敏与合并处理，属于合成案例，用于呈现机制而非指向具体企业。涉及统计数据时，会标明口径与来源机构；涉及监管要求时，只陈述条文内容与生效时间，不延伸解释监管意图。凡属作者判断而非可核验事实的地方，会用"更可能""通常""在我的观察里"这类表述区分。</p>
+<p>（三）从概念到工具的转换</p>
+<p>每章末尾不设复习题，而是给出可以带进会议的判断问题。附录提供三类可直接使用的材料：工具箱汇总了全书出现的框架与模板；角色职责与验收模板可以直接改写为项目文件；自检清单与复盘表用于季度检视与项目结项。</p>
+<p>使用这些工具时需要注意一点。模板能降低沟通成本，也会掩盖判断。一份填满的验收表不代表验收真的成立，一次按流程走的复盘不代表问题真的被看见。工具的价值在于把关键问题固定下来，强迫参与者回答；如果参与者只是勾选，工具就退化为仪式。</p>
+<p>（四）几个贯穿全书的说法</p>
+<p>书中反复出现几个词，含义需要先约定。</p>
+<p>"AI原生项目"指交付物本身依赖模型判断、且判断结果直接进入业务流程的项目，不包括仅在边缘使用AI辅助的传统系统改造。"交付单元"指可被独立管理的最小交付结构，在本书语境里通常是一个任务、一个模型能力与一个复核人的组合。"责任域"指对某类结果承担最终责任的边界，域内可以有多个团队协作，但必须有一个对结果签字的人。"验收口径"指在什么数据、什么条件下、达到什么水平、错误如何处置这一整套约定，而不是单一的准确率数字。"止损"指在预设条件触发时主动终止或明显调整项目，它与失败不同，是一种被设计过的退出。</p>
+<p>这些定义不是学术上的严格界定，而是为了在组织内部形成可讨论的共同语言。实践中经常出现的争论，一半以上源于词语不同义。有人说项目"成功了"，他指的是按时上线；有人说"失败了"，他指的是业务指标没变。两个人都没错，只是谈的不是同一件事。把定义写在项目章程的第一页，比在事故后争论定义要省力得多。</p>
+<p>把问题带回自己的项目</p>
+<p>在把这一章带进实际工作之前，可以用四个问题做一次快速自检。你所在组织最近推进的三个AI项目，验收条款里是否写清了数据分布、达标水平与错误处置？项目章程里是否有一个对最终业务结果签字的人，而不只是各环节的负责人？项目计划里是否给上线后的观察期留了人力与预算？团队是否知道在什么条件下应当主动停下，而不是等到预算耗尽？</p>
+<p>如果四个问题的答案都是否定的，那么问题不在某个项目的执行层，而在组织沿用的管理假设。下一章从战略与组合层面开始，讨论在场景泛滥、预算有限的情况下，怎样决定把哪几件事做成项目，以及如何在投入之前就为退出留好路径。</p>
+<p>回到开头那家零售企业。如果它当初在立项时就把"店长是否愿意按建议下单"写进验收条件，把"建议量与经验冲突时如何处置"写进流程设计，把"谁对最终库存结果负责"写进责任域，项目的结局很可能不同。模型还是那个模型，改变的是围绕它的管理结构。</p>
+<p>这也是本书的基本立场：AI项目的成败，越来越不取决于某一项技术的先进程度，而取决于组织能否为不确定性设计出可运行的秩序。下一章从战略与组合层面开始，讨论在资源有限、场景泛滥的情况下，怎样决定把哪几件事做成项目。</p>
+        </div>
+        <div class="ha-footer-nav">
+          <a href="ch00.html">← 上一页</a>
+          <a href="ch02.html">下一页 →</a>
+        </div>
+      </article>
+    </div>
+  </div>
+  
+<script>
+(function () {
+  var list = document.querySelector(".ha-chapters");
+  if (!list) return;
+  list.addEventListener("click", function (e) {
+    var btn = e.target.closest(".chap-toggle");
+    if (!btn || !list.contains(btn)) return;
+    var li = btn.closest("li[data-chap]");
+    if (!li) return;
+    var willOpen = !li.classList.contains("open");
+    list.querySelectorAll("li[data-chap]").forEach(function (item) {
+      item.classList.remove("open");
+      var b = item.querySelector(".chap-toggle");
+      if (b) b.setAttribute("aria-expanded", "false");
+    });
+    if (willOpen) {
+      li.classList.add("open");
+      btn.setAttribute("aria-expanded", "true");
+      // 第一次展开时进入该章正文；已在本章则只展开小节
+      var href = li.getAttribute("data-chap");
+      var file = (location.pathname.split("/").pop() || "");
+      if (href && file !== href && !file.endsWith("/" + href)) {
+        location.href = href;
+      }
+    }
+  });
+})();
+</script>
+
+</body>
+</html>

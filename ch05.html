@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>第五章 需求与范围：把不确定变成可管理 · AI组织项目管理升级</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,650&family=IBM+Plex+Mono:wght@400;500&family=Noto+Sans+SC:wght@400;500;700&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+:root {
+  --ha-bg: #f5f7fa;
+  --ha-sidebar: #f5f7fa;
+  --ha-ink: #0f1c2e;
+  --ha-muted: #6b7a8d;
+  --ha-line: #dde3eb;
+  --ha-active-bg: #e8eef5;
+  --ha-accent: #f5a623;
+  --ha-accent-ink: #1c1c1a;
+}
+body.hermes-book {
+  background: var(--ha-bg) !important;
+  color: var(--ha-ink);
+  font-size: 17px;
+  line-height: 1.75;
+}
+body.hermes-book a { color: #9a5b00; }
+body.hermes-book a:hover { color: var(--ha-ink); }
+.ha-shell {
+  display: grid;
+  grid-template-columns: 270px minmax(0, 1fr);
+  min-height: 100vh;
+}
+.ha-sidebar {
+  position: sticky;
+  top: 0;
+  align-self: start;
+  height: 100vh;
+  overflow-y: auto;
+  padding: 1.25rem 1rem 1.5rem;
+  border-right: 1px solid var(--ha-line);
+  background: var(--ha-sidebar);
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+.ha-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: var(--ha-muted) !important;
+  text-decoration: none;
+  font-size: 0.88rem;
+}
+.ha-back:hover { color: var(--ha-ink) !important; }
+.ha-toc-label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--ha-muted);
+  letter-spacing: 0.06em;
+  margin: 0.35rem 0 0.15rem;
+}
+.ha-chapters {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+.ha-chapters > li {
+  border-radius: 10px;
+}
+.ha-chapters .chap-toggle {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.35rem;
+  width: 100%;
+  padding: 0.55rem 0.7rem;
+  border: 0;
+  border-radius: 10px;
+  border-left: 3px solid transparent;
+  background: transparent;
+  color: var(--ha-muted);
+  font: inherit;
+  font-size: 0.9rem;
+  line-height: 1.35;
+  text-align: left;
+  cursor: pointer;
+}
+.ha-chapters .chap-toggle:hover {
+  background: rgba(15,28,46,0.04);
+  color: var(--ha-ink);
+}
+.ha-chapters > li.open > .chap-toggle,
+.ha-chapters > li.active > .chap-toggle {
+  background: var(--ha-active-bg);
+  color: var(--ha-ink);
+  font-weight: 600;
+  border-left-color: var(--ha-accent);
+}
+.ha-chapters .chap-caret {
+  flex: 0 0 auto;
+  width: 0.9rem;
+  margin-top: 0.15rem;
+  color: inherit;
+  opacity: 0.7;
+  transition: transform 0.15s ease;
+}
+.ha-chapters > li.open > .chap-toggle .chap-caret {
+  transform: rotate(90deg);
+}
+.ha-chapters .chap-subs {
+  list-style: none;
+  margin: 0 0 0.35rem;
+  padding: 0 0.4rem 0.25rem 1.35rem;
+  display: none;
+}
+.ha-chapters > li.open > .chap-subs {
+  display: grid;
+  gap: 0.12rem;
+}
+.ha-chapters .chap-subs a {
+  display: block;
+  padding: 0.32rem 0.55rem;
+  border-radius: 8px;
+  text-decoration: none;
+  color: var(--ha-muted);
+  font-size: 0.82rem;
+  line-height: 1.35;
+}
+.ha-chapters .chap-subs a:hover {
+  background: rgba(15,28,46,0.04);
+  color: var(--ha-ink);
+}
+.ha-chapters .chap-subs a.active {
+  color: var(--ha-ink);
+  font-weight: 600;
+  background: rgba(31,111,235,0.08);
+}
+.ha-side-foot {
+  margin-top: auto;
+  padding-top: 1rem;
+  border-top: 1px solid var(--ha-line);
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+.ha-side-foot a {
+  color: var(--ha-muted);
+  text-decoration: none;
+  font-size: 0.88rem;
+}
+.ha-side-foot a:hover { color: var(--ha-ink); }
+.ha-main {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+.ha-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.95rem 2rem;
+  border-bottom: 1px solid var(--ha-line);
+  background: rgba(245,247,250,0.92);
+  backdrop-filter: blur(8px);
+  position: sticky;
+  top: 0;
+  z-index: 5;
+}
+.ha-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  text-decoration: none;
+  color: var(--ha-ink);
+  font-weight: 650;
+  font-size: 0.98rem;
+  letter-spacing: -0.02em;
+}
+.ha-brand-mark {
+  width: 1.55rem;
+  height: 1.55rem;
+  border-radius: 6px;
+  background: #0f1c2e;
+  color: #fff;
+  display: grid;
+  place-items: center;
+  font-size: 0.62rem;
+  font-weight: 700;
+  font-family: var(--font-mono);
+}
+.ha-top-links {
+  display: flex;
+  gap: 1.1rem;
+  flex-wrap: wrap;
+}
+.ha-top-links a {
+  color: var(--ha-muted);
+  text-decoration: none;
+  font-size: 0.9rem;
+}
+.ha-top-links a:hover { color: var(--ha-ink); }
+.ha-article {
+  width: min(760px, calc(100% - 3rem));
+  margin: 0 auto;
+  padding: 1.75rem 0 4rem;
+}
+.ha-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  color: var(--ha-muted);
+  font-size: 0.88rem;
+  margin-bottom: 1.25rem;
+}
+.ha-meta a { color: inherit; text-decoration: none; }
+.ha-meta a:hover { color: var(--ha-ink); }
+.ha-chapter-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.9rem;
+  margin-bottom: 1.5rem;
+}
+.ha-chapter-num {
+  flex: 0 0 auto;
+  min-width: 2.4rem;
+  height: 2.4rem;
+  padding: 0 0.55rem;
+  border-radius: 8px;
+  background: var(--ha-accent);
+  color: var(--ha-accent-ink);
+  display: grid;
+  place-items: center;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+.ha-chapter-head h1 {
+  margin: 0;
+  font-size: clamp(1.55rem, 3vw, 2.15rem);
+  border: none;
+  padding: 0;
+  letter-spacing: -0.03em;
+}
+.ha-section-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.05rem;
+}
+.ha-section-list a {
+  display: block;
+  padding: 0.35rem 0.55rem;
+  border-radius: 8px;
+  text-decoration: none;
+  color: var(--ha-muted);
+  font-size: 0.82rem;
+  line-height: 1.35;
+}
+.ha-section-list a:hover {
+  background: rgba(15,28,46,0.04);
+  color: var(--ha-ink);
+}
+.ha-content h2 {
+  border-top: none;
+  padding-top: 0.2rem;
+  margin-top: 2.2rem;
+}
+.ha-content h2::before {
+  content: "";
+  display: block;
+  width: 2rem;
+  height: 3px;
+  background: var(--ha-accent);
+  margin-bottom: 0.75rem;
+  border-radius: 2px;
+}
+.ha-content p { margin: 0 0 1rem; text-indent: 2em; }
+.ha-sec-box {
+  margin: 0 0 1.75rem;
+  padding: 1rem 1.15rem 1.05rem;
+  border-radius: 12px;
+  background: #fff;
+  border: 1px solid var(--ha-line);
+}
+.ha-sec-box .label {
+  margin: 0 0 0.55rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--ha-muted);
+  letter-spacing: 0.04em;
+}
+.ha-sec-box ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.35rem;
+}
+.ha-sec-box a {
+  text-decoration: none;
+  color: var(--ha-ink);
+  font-size: 0.95rem;
+}
+.ha-sec-box a:hover { color: #1554b5; }
+.book-block {
+  margin: 0 0 1rem;
+  padding: 1rem 1.1rem 1.05rem;
+  border-radius: 12px;
+  background: #fff;
+  border: 1px solid var(--ha-line);
+}
+.book-block h2 {
+  margin: 0 0 0.55rem;
+  font-size: 1.05rem;
+  border: none;
+  padding: 0;
+  display: flex;
+  gap: 0.65rem;
+  align-items: baseline;
+}
+.book-block h2 a { text-decoration: none; color: var(--ha-ink); }
+.book-block h2 .num {
+  display: inline-grid;
+  place-items: center;
+  width: 1.85rem;
+  height: 1.85rem;
+  border-radius: 7px;
+  background: var(--ha-accent);
+  color: var(--ha-accent-ink);
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+.book-block ul.secs {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  color: #3a4652;
+  font-size: 0.92rem;
+  display: grid;
+  gap: 0.28rem;
+}
+.book-block ul.secs a { text-decoration: none; color: #3a4652; }
+.book-block ul.secs a:hover { color: #1554b5; }
+.figcap { color: var(--ha-muted); font-size: 0.9rem; text-align: center; margin: 0.25rem 0 1rem; }
+.table-wrap { overflow-x: auto; margin: 1rem 0; }
+.table-wrap table { width: 100%; border-collapse: collapse; font-size: 0.92rem; }
+.table-wrap th, .table-wrap td { border: 1px solid var(--ha-line); padding: 0.45rem 0.6rem; text-align: left; vertical-align: top; }
+.table-wrap th { background: #e8eef5; }
+.figure img { max-width: 100%; height: auto; border-radius: 10px; border: 1px solid var(--ha-line); }
+.ha-footer-nav {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 2.5rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--ha-line);
+}
+.ha-footer-nav a {
+  text-decoration: none;
+  color: var(--ha-ink);
+  font-weight: 600;
+}
+.ha-index-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+.ha-index-list a {
+  display: grid;
+  grid-template-columns: 2.6rem 1fr;
+  gap: 0.85rem;
+  align-items: center;
+  padding: 0.95rem 1rem;
+  border-radius: 12px;
+  text-decoration: none;
+  color: var(--ha-ink);
+  background: #fff;
+  border: 1px solid var(--ha-line);
+}
+.ha-index-list a:hover { border-color: #c5d0de; background: #f8fafc; }
+.ha-index-list .num {
+  width: 2.4rem;
+  height: 2.4rem;
+  border-radius: 8px;
+  background: var(--ha-accent);
+  color: var(--ha-accent-ink);
+  display: grid;
+  place-items: center;
+  font-family: var(--font-mono);
+  font-weight: 700;
+}
+.ha-author {
+  margin: 0 0 1.5rem;
+  padding: 1.1rem 1.2rem;
+  border-radius: 12px;
+  background: #fff;
+  border: 1px solid var(--ha-line);
+}
+.ha-author h2 {
+  margin: 0 0 0.45rem;
+  font-size: 1.05rem;
+  border: none;
+  padding: 0;
+}
+.ha-author p { margin: 0; color: #3a4652; font-size: 0.98rem; }
+.ha-cover-thumb {
+  display: inline-block;
+  line-height: 0;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid var(--ha-line);
+  margin: 0 0 1.25rem;
+}
+.ha-cover-thumb img {
+  width: min(240px, 100%);
+  height: auto;
+  display: block;
+}
+@media (max-width: 920px) {
+  .ha-shell { grid-template-columns: 1fr; }
+  .ha-sidebar {
+    position: static;
+    height: auto;
+    max-height: none;
+    border-right: none;
+    border-bottom: 1px solid var(--ha-line);
+  }
+  .ha-article { width: min(760px, calc(100% - 2rem)); }
+  .ha-topbar { padding: 0.85rem 1rem; }
+}
+</style>
+</head>
+<body class="hermes-book">
+  <div class="ha-shell">
+    <aside class="ha-sidebar" aria-label="目录">
+      <a class="ha-back" href="index.html">← 返回目录</a>
+      <div class="ha-toc-label">目录</div>
+      <ul class="ha-chapters">
+        <li data-chap="ch00.html"><button type="button" class="chap-toggle" aria-expanded="false"><span class="chap-caret" aria-hidden="true">▸</span><span>前言</span></button><ul class="chap-subs"><li><a href="ch00.html#0-1-这本书想解决什么问题">0.1 这本书想解决什么问题</a></li><li><a href="ch00.html#0-2-写给谁看">0.2 写给谁看</a></li><li><a href="ch00.html#0-3-三个基本判断">0.3 三个基本判断</a></li><li><a href="ch00.html#0-4-全书结构">0.4 全书结构</a></li><li><a href="ch00.html#0-5-关于案例与数据的说明">0.5 关于案例与数据的说明</a></li><li><a href="ch00.html#0-6-一个提醒">0.6 一个提醒</a></li></ul></li><li data-chap="ch01.html"><button type="button" class="chap-toggle" aria-expanded="false"><span class="chap-caret" aria-hidden="true">▸</span><span>第一章 重新理解AI组织中的项目</span></button><ul class="chap-subs"><li><a href="ch01.html#1-1-从数字化项目到AI原生项目">1.1 从数字化项目到AI原生项目</a></li><li><a href="ch01.html#1-2-项目失败的常见归因为何失效">1.2 项目失败的常见归因为何失效</a></li><li><a href="ch01.html#1-3-人机协同如何改写交付单元">1.3 人机协同如何改写交付单元</a></li><li><a href="ch01.html#1-4-本书框架与使用方法">1.4 本书框架与使用方法</a></li></ul></li><li data-chap="ch02.html"><button type="button" class="chap-toggle" aria-expanded="false"><span class="chap-caret" aria-hidden="true">▸</span><span>第二章 AI时代的项目战略与组合管理</span></button><ul class="chap-subs"><li><a href="ch02.html#2-1-从项目清单到能力与价值组合">2.1 从项目清单到能力与价值组合</a></li><li><a href="ch02.html#2-2-什么样的事值得做成项目">2.2 什么样的事值得做成项目</a></li><li><a href="ch02.html#2-3-AI投入的优先级与止损机制">2.3 AI投入的优先级与止损机制</a></li><li><a href="ch02.html#2-4-组合看板-战略对齐与资源再平衡">2.4 组合看板：战略对齐与资源再平衡</a></li></ul></li><li data-chap="ch03.html"><button type="button" class="chap-toggle" aria-expanded="false"><span class="chap-caret" aria-hidden="true">▸</span><span>第三章 重新定义项目成功</span></button><ul class="chap-subs"><li><a href="ch03.html#3-1-从按期上线到可验证的业务结果">3.1 从按期上线到可验证的业务结果</a></li><li><a href="ch03.html#3-2-过程指标-结果指标与学习指标">3.2 过程指标、结果指标与学习指标</a></li><li><a href="ch03.html#3-3-AI项目的验收口径怎么定">3.3 AI项目的验收口径怎么定</a></li><li><a href="ch03.html#3-4-失败-试点与规模化的判定标准">3.4 失败、试点与规模化的判定标准</a></li></ul></li><li data-chap="ch04.html"><button type="button" class="chap-toggle" aria-expanded="false"><span class="chap-caret" aria-hidden="true">▸</span><span>第四章 项目组织设计：角色、责任与决策权</span></button><ul class="chap-subs"><li><a href="ch04.html#4-1-产品-业务-数据-算法-工程如何编队">4.1 产品、业务、数据、算法、工程如何编队</a></li><li><a href="ch04.html#4-2-人机分工与关键决策分级">4.2 人机分工与关键决策分级</a></li><li><a href="ch04.html#4-3-项目经理的新定位-从进度官到协同设计师">4.3 项目经理的新定位：从进度官到协同设计师</a></li><li><a href="ch04.html#4-4-责任域-升级路径与决策台账">4.4 责任域、升级路径与决策台账</a></li></ul></li><li class="open active" data-chap="ch05.html"><button type="button" class="chap-toggle" aria-expanded="true"><span class="chap-caret" aria-hidden="true">▸</span><span>第五章 需求与范围：把不确定变成可管理</span></button><ul class="chap-subs"><li><a href="ch05.html#5-1-AI需求为什么总是-看起来清楚-做起来漂移">5.1 AI需求为什么总是"看起来清楚、做起来漂移"</a></li><li><a href="ch05.html#5-2-问题定义-约束边界与不可自动化清单">5.2 问题定义、约束边界与不可自动化清单</a></li><li><a href="ch05.html#5-3-范围分层-MVP-增强版与禁区">5.3 范围分层：MVP、增强版与禁区</a></li><li><a href="ch05.html#5-4-变更控制-允许探索-但不允许无底线膨胀">5.4 变更控制：允许探索，但不允许无底线膨胀</a></li></ul></li><li data-chap="ch06.html"><button type="button" class="chap-toggle" aria-expanded="false"><span class="chap-caret" aria-hidden="true">▸</span><span>第六章 计划与交付：适配AI工作方式的节奏</span></button><ul class="chap-subs"><li><a href="ch06.html#6-1-为什么传统瀑布和纯敏捷都容易失灵">6.1 为什么传统瀑布和纯敏捷都容易失灵</a></li><li><a href="ch06.html#6-2-双轨节奏-探索轨与交付轨">6.2 双轨节奏：探索轨与交付轨</a></li><li><a href="ch06.html#6-3-里程碑设计-数据-模型-流程-治理四条线">6.3 里程碑设计：数据、模型、流程、治理四条线</a></li><li><a href="ch06.html#6-4-人机并行下的依赖管理与缓冲策略">6.4 人机并行下的依赖管理与缓冲策略</a></li></ul></li><li data-chap="ch07.html"><button type="button" class="chap-toggle" aria-expanded="false"><span class="chap-caret" aria-hidden="true">▸</span><span>第七章 质量、风险与合规治理</span></button><ul class="chap-subs"><li><a href="ch07.html#7-1-AI项目的质量不只是-测通了">7.1 AI项目的质量不只是"测通了"</a></li><li><a href="ch07.html#7-2-模型风险-数据风险-流程风险与责任风险">7.2 模型风险、数据风险、流程风险与责任风险</a></li><li><a href="ch07.html#7-3-验证机制-抽样-回测-人工复核与回滚">7.3 验证机制：抽样、回测、人工复核与回滚</a></li><li><a href="ch07.html#7-4-隐私-安全-伦理与审计如何嵌入交付">7.4 隐私、安全、伦理与审计如何嵌入交付</a></li></ul></li><li data-chap="ch08.html"><button type="button" class="chap-toggle" aria-expanded="false"><span class="chap-caret" aria-hidden="true">▸</span><span>第八章 协作机制：跨部门真正跑起来</span></button><ul class="chap-subs"><li><a href="ch08.html#8-1-AI项目协作失败的组织根因">8.1 AI项目协作失败的组织根因</a></li><li><a href="ch08.html#8-2-协同界面-输入-审核-例外-交接">8.2 协同界面：输入、审核、例外、交接</a></li><li><a href="ch08.html#8-3-会议-文档-智能体与知识沉淀怎么配">8.3 会议、文档、智能体与知识沉淀怎么配</a></li><li><a href="ch08.html#8-4-冲突处理-业务目标-技术可行与合规底线">8.4 冲突处理：业务目标、技术可行与合规底线</a></li></ul></li><li data-chap="ch09.html"><button type="button" class="chap-toggle" aria-expanded="false"><span class="chap-caret" aria-hidden="true">▸</span><span>第九章 人效与激励：让团队愿意用AI交付</span></button><ul class="chap-subs"><li><a href="ch09.html#9-1-从工时核算到判断密度与交付质量">9.1 从工时核算到判断密度与交付质量</a></li><li><a href="ch09.html#9-2-AI贡献如何进入项目评价">9.2 AI贡献如何进入项目评价</a></li><li><a href="ch09.html#9-3-项目经理-专家与执行角色的差异化激励">9.3 项目经理、专家与执行角色的差异化激励</a></li><li><a href="ch09.html#9-4-能力建设-项目团队的AI素养与带教机制">9.4 能力建设：项目团队的AI素养与带教机制</a></li></ul></li><li data-chap="ch10.html"><button type="button" class="chap-toggle" aria-expanded="false"><span class="chap-caret" aria-hidden="true">▸</span><span>第十章 落地路径：从试点到规模化升级</span></button><ul class="chap-subs"><li><a href="ch10.html#10-1-成熟度评估与改造切入点选择">10.1 成熟度评估与改造切入点选择</a></li><li><a href="ch10.html#10-2-90天升级计划与一年演进路线">10.2 90天升级计划与一年演进路线</a></li><li><a href="ch10.html#10-3-可复用的项目操作系统">10.3 可复用的项目操作系统</a></li><li><a href="ch10.html#10-4-典型场景案例与避坑清单">10.4 典型场景案例与避坑清单</a></li></ul></li><li data-chap="appendix.html"><button type="button" class="chap-toggle" aria-expanded="false"><span class="chap-caret" aria-hidden="true">▸</span><span>附录</span></button><ul class="chap-subs"><li><a href="appendix.html#A-1-AI项目管理工具箱">A.1 AI项目管理工具箱</a></li><li><a href="appendix.html#A-2-角色职责-决策分级与验收模板">A.2 角色职责、决策分级与验收模板</a></li><li><a href="appendix.html#A-3-自检清单与复盘表">A.3 自检清单与复盘表</a></li><li><a href="appendix.html#A-4-使用说明与常见误用">A.4 使用说明与常见误用</a></li></ul></li>
+      </ul>
+      <div class="ha-side-foot">
+        <a href="cover.html">封面</a>
+        <a href="index.html">目录</a>
+      </div>
+    </aside>
+    <div class="ha-main">
+      <header class="ha-topbar">
+        <a class="ha-brand" href="index.html">
+          <span class="ha-brand-mark">PM</span>
+          AI组织项目管理升级
+        </a>
+        <div class="ha-top-links">
+          <a href="cover.html">封面</a>
+          <a href="index.html">目录</a>
+        </div>
+      </header>
+      <article class="ha-article">
+        <div class="ha-meta">
+          <div><a href="index.html">目录</a> / 第05章</div>
+          <div>赵登琴 著</div>
+        </div>
+        <div class="ha-chapter-head">
+          <div class="ha-chapter-num">05</div>
+          <h1>第五章 需求与范围：把不确定变成可管理</h1>
+        </div>
+        <nav class="ha-sec-box" aria-label="本章小节">
+          <div class="label">本章小节</div>
+          <ul>
+<li><a href="#5-1-AI需求为什么总是-看起来清楚-做起来漂移">5.1 AI需求为什么总是"看起来清楚、做起来漂移"</a></li><li><a href="#5-2-问题定义-约束边界与不可自动化清单">5.2 问题定义、约束边界与不可自动化清单</a></li><li><a href="#5-3-范围分层-MVP-增强版与禁区">5.3 范围分层：MVP、增强版与禁区</a></li><li><a href="#5-4-变更控制-允许探索-但不允许无底线膨胀">5.4 变更控制：允许探索，但不允许无底线膨胀</a></li>
+          </ul>
+        </nav>
+        <div class="ha-content">
+<p>需求评审会上，业务方描述得很清楚：希望能自动识别客户来电的意图，把投诉、咨询、催办分开，转给对应的坐席组。技术方听完觉得可行，产品经理写了三十页需求文档，项目正式启动。三个月后，第一次演示，业务方说"这不是我们要的"。追问下去才发现，他们真正在意的是"投诉客户必须在三分钟内转到高级坐席"，而系统只做了意图分类，没有做优先级与转接规则。文档里写的是分类，脑子里想的是处置。</p>
+<p>这类错位几乎每个AI项目都会遇到。它常被归为需求不清，实际是需求本身的性质决定的：AI需求只有在看到能力边界之后才能被说清。立项时业务方无法想象模型会在什么地方出错，也就无法预先描述自己真正需要的边界条件。</p>
+<h2 id="5-1-AI需求为什么总是-看起来清楚-做起来漂移">5.1 AI需求为什么总是"看起来清楚、做起来漂移"</h2>
+<p>（一）三种漂移</p>
+<p>需求漂移有三种形态，性质不同，处理方式也不同。</p>
+<p>口径漂移指的是同一个词在项目推进中含义变化。业务说的"投诉"包含情绪激烈的咨询，数据里的"投诉"是工单类型字段，模型学到的"投诉"是某种语言模式。三者不一致，项目越往后做，差异越明显。</p>
+<p>边界漂移指的是任务范围在探索中扩张。原本只做意图分类，做着发现需要判断紧急程度，再往后发现需要给出处置建议，最后变成了一个完整的客服决策系统。每一次扩张都有合理理由，累积起来却超出了原定资源。</p>
+<p>期待漂移指的是业务方对效果的预期随信息增加而变化。立项时预期是"能分个类就行"，看到演示后预期变成"应该像人一样理解"，再后来变成"为什么它不懂我们的老客户"。期待上升不是坏事，但它必须被显性管理，否则项目永远处于"还差一点"的状态。</p>
+<p>（二）需求文档缺失的三样东西</p>
+<p>传统需求文档擅长描述功能，缺少三样对AI项目至关重要的内容。</p>
+<p>第一样是判断标准。不是"识别投诉"，而是"当客户表达不满且提出明确诉求时判为投诉，仅有情绪表达而无诉求时判为情绪安抚"。判断标准越具体，标注一致性越高，模型可学的东西越清楚。</p>
+<p>第二样是例外清单。列出哪些情况不应由系统处理，例如涉及法律纠纷、涉及人身安全、涉及媒体采访。例外清单决定了系统的边界，也决定了人工兜底的范围。</p>
+<p>第三样是处置链路。系统输出之后发生什么，谁接、多久接、权限到哪里、结果如何回流。缺这一样，需求就停在"输出物"层面，永远无法验证价值。</p>
+<p>（三）漂移并不总是坏事</p>
+<p>需要说明的是，漂移不全是负面现象。AI项目的一部分价值，恰恰来自探索过程中发现的新可能。原本只想做意图分类，过程中发现可以用同一套能力做质检，这是正向漂移。</p>
+<p>区分正向与负向漂移的标准，是看它是否增加了可验证的价值，同时是否在资源可承受范围内。正向漂移通常会带来新的证据与新的业务动作；负向漂移只是让范围变大，没有增加任何可验证的东西。</p>
+<p>管理上的做法不是禁止漂移，而是给漂移设一个容器：允许在容器内调整，超出容器必须走变更流程。容器的大小由预算与阶段目标决定，而不是由讨论热度决定。</p>
+<p>（四）需求应当带着证据出现</p>
+<p>在AI项目里，口头需求几乎没有价值，带证据的需求才有讨论的基础。所谓证据，不一定是完整的数据集，可以是一批真实案例、一段历史工单、几张现场截图，甚至是一次跟岗记录。</p>
+<p>带证据的需求会自然收敛。业务方拿出五十条案例，逐条说明自己希望系统怎么处理，判断标准在这个过程中被具体化，例外情况也会自然浮现。相比之下，一场没有材料的讨论会，往往只能产出"要准确、要快、要好用"这类无法执行的表述。</p>
+<p>证据还能提前暴露可行性问题。五十条案例里如果有一半的边界模糊、专家之间意见不一致，说明这个任务本身缺乏稳定标准，模型很难学到一致的模式。这样的发现如果发生在立项前，企业可以省下几个月的投入；如果发生在验收时，就变成一场关于"标准到底是什么"的争论。</p>
+<p>收集证据的工作应当由业务方主导，技术方协助。让技术方去收集业务证据，通常只能收到被简化过的样本，失去真实的复杂性。业务方主导也意味着一种承诺：愿意为这个判断投入时间。不愿意投入时间的业务方，很难在项目后期承担结果责任。</p>
+<p>（五）需求的所有权归谁</p>
+<p>需求文档由谁签字，决定了谁在后期有解释权。很多项目把需求文档交给产品经理签字，业务方只参加评审，结果在出现争议时，产品经理被迫替业务解释意图，越解释越偏。</p>
+<p>AI项目的需求应当由业务负责人签字。签字意味着三件事：他确认判断标准，他确认不可自动化清单，他确认处置链路。这三件事都属于业务判断，产品经理可以协助整理，但不能代替承担。</p>
+<p>技术方也有一份签字责任，针对的是可行性边界。技术负责人需要确认在给定数据与资源下，需求中的判断标准是否可被实现，哪些部分需要降级为人机协同。这份确认不是承诺效果，而是承诺方法的合理性与边界的诚实。</p>
+<p>两份签字分开，争议就容易被定位。业务说效果不对，先看判断标准是否被遵守；技术说做不到，先看边界是否被隐瞒。责任清楚，返工就少。</p>
+<h2 id="5-2-问题定义-约束边界与不可自动化清单">5.2 问题定义、约束边界与不可自动化清单</h2>
+<p>（一）从"要一个系统"到"要一个判断"</p>
+<p>需求定义的第一步，是把"要一个系统"翻译成"要一个什么判断"。系统是载体，判断才是核心。</p>
+<p>翻译的方法是连续追问三层。第一层问"这个系统要替代人的哪个动作"，把系统语言转成动作语言。第二层问"这个动作依赖什么判断"，把动作转成判断。第三层问"这个判断错了会怎样"，把判断转成风险与代价。三层问完，需求的基本轮廓就出来了。</p>
+<p>以合同审查为例。系统要替代的是"初审人员逐条比对条款"这个动作；这个动作依赖的判断是"哪些条款与公司标准模板存在实质性偏离"；判断错了的后果是"漏掉风险条款导致损失"或"误报过多导致业务延误"。三层追问之后，需求就不再是"做一个合同审查系统"，而是"在可接受的误报率下，识别实质性偏离条款，并给出偏离类型"。</p>
+<p>这个表述可以直接转化为标注规范、评测集与验收条款，也能让业务方明白系统不做什么。</p>
+<p>（二）约束边界要写成清单</p>
+<p>约束条件如果不写下来，就会在项目中期以"突然发现"的方式出现。常见的约束有五类，每类都需要在立项时确认。</p>
+<p>数据约束包括数据是否可得、是否合规、标注成本多少、更新频率如何。权限约束包括系统能读取哪些系统、能写入哪些字段、能触发哪些动作。时效约束包括业务能容忍多长的响应时间，超时后如何降级。成本约束包括单次处理的成本上限，以及规模扩大后的成本曲线。合规约束包括是否需要内容标识、是否需要备案、是否涉及个人信息处理。</p>
+<p>五类约束不必一次写全，但必须在第一阶段结束前确认。任何一项确认不了，都应当视为项目风险，而不是"后面再说"。经验上，项目后期的重大返工，八成源于某条约束在早期被跳过。</p>
+<p>（三）不可自动化清单</p>
+<p>比"要做什么"更需要明确的是"不做什么"。不可自动化清单列出那些即使技术可行、也不应交给系统的部分。</p>
+<p>清单通常包含四类内容。涉及重大不可逆后果的判断，例如直接拒赔、直接冻结账户，应保留人工决定。涉及价值判断与伦理取舍的事项，例如是否给予特殊照顾，不应由模型代劳。涉及法律责任认定的环节，例如事故责任划分，必须有具备资质的人签字。涉及关系维护的沟通，例如安抚情绪激烈的客户，机器可以辅助但不能替代。</p>
+<p>这份清单有三个作用。它保护企业不把不可承受的风险交给概率系统；它让人工兜底有明确的范围，便于配置人力；它也给模型迭代划出边界，避免团队在错误方向上追求"全自动"。</p>
+<p>清单需要定期复核。技术能力提升、监管要求变化、业务模式调整，都可能让某些项目从"不可自动化"变成"可辅助"。复核频率建议每年一次，由合规与业务共同确认。</p>
+<p>（四）约束条件的谈判方式</p>
+<p>约束条件不是客观事实，很多时候是可谈判的变量。数据不够，可以补；权限没有，可以申请；时效太紧，可以分级处理；成本太高，可以缩小范围。问题在于，谈判必须发生在项目早期，且要有明确的交换条件。</p>
+<p>有效的谈判方式是"条件换条件"。业务方要求更高的准确率，技术方可以要求更长的标注周期与更明确的判断标准；技术方要求放宽响应时延，业务方可以要求系统在超时情况下给出可用的降级方案。每一次让步都应当有对应物，否则谈判会变成单方面的要求。</p>
+<p>谈判还需要一个记录人。口径、权限、时效这些条件，往往在会议中被口头确认，随后在传递中变形。把确认结果写入项目文档，并由双方接口人签字，能避免后期反复。签字不是不信任，而是承认这些条件会约束后续所有决定。</p>
+<p>对于确实无法满足的约束，应当尽早转为范围调整，而不是硬撑。数据拿不到就缩小任务边界，权限批不下来就改成人机协同而不是自动执行。把不可满足的约束留在计划里，等于给项目埋一个必然爆发的延期。</p>
+<h2 id="5-3-范围分层-MVP-增强版与禁区">5.3 范围分层：MVP、增强版与禁区</h2>
+<p>（一）MVP是最小可验证假设</p>
+<p>MVP常被误解为"功能最少的版本"，于是团队砍掉一半功能，做出一个谁都不满意的半成品。这个理解偏了。MVP的正确含义是最小可验证假设：用最少的投入，验证项目最核心的那个假设是否成立。</p>
+<p>核心假设通常只有一句话。例如"在长尾合同上，模型识别实质性偏离的召回率能达到可用水平"。MVP要做的全部工作，就是设计一个能回答这句话的实验，可能只需要三百份样本、一个简化界面和两名复核人员，不需要完整系统。</p>
+<p>以假设为中心的MVP有两个好处。它让投入与信息量成正比，避免在假设未验证前建设大量功能；它也让失败变得便宜，假设被证伪时，损失仅限于实验成本。</p>
+<p>判断MVP是否合格，可以用一个问题检验：如果这个版本的结果是否定的，我们是否愿意接受并停止项目？如果答案是不愿意，说明MVP设计得太大，已经绑定了太多沉没成本。</p>
+<p>（二）增强版的进入条件</p>
+<p>增强版是在核心假设成立之后，把能力扩展到更多场景、更高自动化的版本。它不是自然演进，而应有明确的进入条件。</p>
+<p>条件之一是核心场景稳定。在约定评测集上连续多个周期达标，且误判类型已经收敛到可解释的范围。条件之二是业务侧已形成使用习惯，关键动作完成率达到约定水平。条件之三是单位经济成立，扩展后的成本仍在可接受区间。条件之四是风险控制到位，回滚与监测机制经过验证。</p>
+<p>四条都满足，才值得投入增强版。只满足一两条就扩张，通常会把一个尚可的试点拖成一个失控的大项目。企业最常见的错误，是在试点看到亮点后立即追加范围，结果核心场景还没稳定，资源已被分散。</p>
+<p>（三）禁区怎么划</p>
+<p>禁区是与MVP、增强版并列的第三层，指明确不做的范围。划禁区不是保守，而是保护项目的聚焦度。</p>
+<p>禁区可以分为三类。技术禁区指当前能力明显不足的任务，例如需要长程推理且缺乏数据的场景。合规禁区指监管明确限制的用途，例如未经授权的个人信息处理、未标识的生成内容对外发布。组织禁区指当前流程与权限无法支撑的场景，例如需要跨三个部门实时联动但没有任何一方有调度权。</p>
+<p>三类禁区都应在项目文档中写明，并说明划入禁区的理由与复核时间。写明理由很重要，它让后来的人知道这是经过判断的边界，而不是随意的排除。复核时间则避免禁区永久化，技术或制度变化后可以重新评估。</p>
+<p>（四）给MVP配一个时间盒</p>
+<p>MVP最常见的失控方式，是把一个本应两周完成的实验，做成一个三人月的开发。防止这种失控，需要给MVP配一个时间盒：明确在多长时间内必须出结论，无论结论是什么。</p>
+<p>时间盒的长度取决于反馈周期。如果样本可以直接从历史数据获得，四周足够完成一轮"数据—模型—评估"的闭环；如果需要重新采集数据或改造接口，八周更现实。超过八周仍无结论，通常说明问题定义不清，或者团队在做系统而不是在做实验。</p>
+<p>时间盒的核心纪律是到点必须结论，结论只有三种：假设成立、假设不成立、假设需要调整后重测。不允许出现"再给两周看看"这种状态，因为它会把实验变成项目，把学习变成消耗。</p>
+<p>结论之后才谈资源。假设成立，进入增强版的评估；假设不成立，保留结论与资产，团队转向；需要重测，必须说明新的假设是什么，为什么上一轮无法回答。这套安排看起来冷酷，却能让企业的试错次数成倍增加。</p>
+<p>（五）怎样判定MVP"验证完成"</p>
+<p>"验证完成"不是一个感觉，而是一组可检查的条件。条件没写清，团队会倾向于用主观印象宣布通过。</p>
+<p>第一项条件是样本充分。评测集要覆盖主要场景与典型长尾，样本量足以给出稳定的区间估计，而不是靠几十条案例的偶然结果。如果样本不足，结论只能写成"初步信号"，不能写成"验证通过"。</p>
+<p>第二项条件是对照存在。至少有一个可比较的基线，无论是现行人工流程、原有规则系统，还是未上线的对照区域。没有对照，任何改善都无法归因，也无法说服财务。</p>
+<p>第三项条件是业务方参与判断。不能只由技术团队看指标，业务方必须亲自审核一批模型输出，确认这些输出在真实语境下是否可用。业务方拒绝对样本表态，通常说明他并不认可这个任务，这本身就是重要的结论。</p>
+<p>第四项条件是可复现。换一批同分布样本，结论仍然成立。只在特定批次上表现好，说明模型学到了批次特征而非业务规律，这种"成功"在扩量后会迅速瓦解。</p>
+<p>四项条件满足，MVP才算验证完成。任何一项缺失，结论都应当降级为"部分验证"，并说明缺口在哪里、下一步如何补。这种表述看起来不够漂亮，却能让后续决策建立在真实信息上。</p>
+<h2 id="5-4-变更控制-允许探索-但不允许无底线膨胀">5.4 变更控制：允许探索，但不允许无底线膨胀</h2>
+<p>（一）变更的三种性质</p>
+<p>变更请求看起来都差不多，性质却完全不同。</p>
+<p>探索性变更源于新发现，通常伴随新的证据。例如试点中发现某类合同误判率异常高，需要增加一个子类。这类变更是项目正常的学习过程，应当被鼓励。</p>
+<p>替代性变更源于原方案不可行，需要换一条路。例如原定的数据源无法获取，改用另一套数据。这类变更不增加范围，只改变路径，应当快速批准。</p>
+<p>蔓延性变更是范围的无理由扩张，通常由"顺便也做一下"引发。它没有新证据支撑，只是让项目看起来更完整。这类变更是资源失控的主要来源，应当被严格约束。</p>
+<p>管理者需要有能力区分三者。区分的依据不是请求的措辞，而是它是否带来新的可验证信息，以及它是否改变了原定的验收口径。</p>
+<p>（二）变更闸门与预算联动</p>
+<p>变更控制的有效性，取决于它是否与预算联动。只审批不变更预算，团队会用原有资源硬扛新增范围，最终以质量下降或延期收场。</p>
+<p>可行的做法是设一个变更预算池，通常占项目总预算的一成到两成，专门用于探索性变更。每次变更从池中支取，池用尽即停止接受新变更，除非置换出等量的原范围。这个机制把"要不要做"变成了"用什么换"，讨论质量会明显提高。</p>
+<p>替代性变更不需要动用预算池，但需要技术负责人签字确认路径可行。蔓延性变更原则上不接受，除非业务负责人愿意用其他范围来置换，并承担置换带来的验收调整。</p>
+<p>闸门的频率不宜过高。每月一次集中审议，比随时受理更有效率，也能让请求方先自行筛选。紧急变更可以走快速通道，但必须事后补记，并在下次会议上说明。</p>
+<p>（三）范围账本与"换而不是加"</p>
+<p>范围账本是一张持续维护的表，记录项目当前承诺的范围、每项范围的来源、估算成本、验收方式与状态。它的作用类似财务账本，让范围变化有据可查。</p>
+<p>账本的关键用法是"换而不是加"。任何新增范围，都必须对应一项被移除或降级的原范围，除非动用变更预算池。这个规则听起来苛刻，却能有效抑制膨胀，因为它强迫提出者回答"这件事比现在在做的事更重要吗"。</p>
+<p>账本还应当在阶段评审时公开。让所有人看到范围已经有多满，比在会上争论"能不能再加一点"更有效。很多蔓延性变更在看见账本之后就自行消失了。</p>
+<p>（四）变更会议怎么开</p>
+<p>变更会议最容易开成审批会，一件件过，逐条表态，最后不了了之。更有效的开法是把变更放在决策框架里讨论。</p>
+<p>每项变更先由提出人用三句话说明：要解决什么问题，有哪些证据，如果不做会怎样。三句话说不清，说明请求还不成熟，退回补充材料。这一步能过滤掉大部分临时起意。</p>
+<p>接着由技术方给出成本估算，包括人力、时间与对现有范围的影响。估算允许有误差，但必须有依据，例如"需要新增标注两周、模型重训一周、评测集扩充三天"。没有估算的变更讨论，最终都会以"先做起来看看"收场。</p>
+<p>最后由业务负责人做取舍，取舍的对象不是"做不做"，而是"用哪一项现有范围来换"。这个设计把会议从审批变成资源配置，参与者的注意力会自然转向优先级，而不是争取。</p>
+<p>会议结束时必须留下三样记录：决定、置换对象、复核时间。三项缺一，变更就会在下次会议上重新出现。</p>
+<p>（五）变更的否决权归谁</p>
+<p>变更会议需要一个明确的否决人。没有否决人的会议，最终会以"大家都同意试试"结束，范围在善意中膨胀。</p>
+<p>否决权通常归业务负责人，因为范围与资源最终由他承担。技术负责人保留另一种否决权，针对的是技术可行性：如果变更要求在当前能力下不可能达成，技术方可以否决，但必须同时给出可行的替代方案，而不是简单拒绝。</p>
+<p>合规负责人拥有第三类否决权，针对的是红线问题，且不受业务与技术意见影响。这类否决应当少见、明确、可追溯，否则合规会变成所有项目的瓶颈，反而促使团队绕过它。</p>
+<p>三类否决权分设之后，会议讨论会变得有结构。业务在价值与资源之间取舍，技术在路径与可行性上把关，合规在红线上一票定音。参与者知道自己的边界，讨论效率会明显提高。</p>
+<p>需要提醒的是，否决权不能被滥用为拖延工具。任何否决都应当附带理由与替代方案，并在下次会议上复核。没有理由的否决，与没有否决一样有害。</p>
+<p>范围确定之后，接下来的问题是如何安排节奏。第六章处理计划与交付，讨论为什么传统瀑布与纯敏捷都容易失灵，以及双轨节奏如何运作。</p>
+<p>某电商平台的商品标题合规项目，可以说明需求定义的作用。最初的需求是"自动识别违规标题并下架商品"，听起来清楚，落地时却迅速漂移。运营担心误下架影响流量，法务要求违规必下架，商家则希望有申诉机会。三方诉求不同，需求在会议中不断被改写。</p>
+<p>项目组停下来做了一次三层追问。这个系统替代的动作是"审核员逐条看标题"，依赖的判断是"标题是否包含绝对化用语、虚假承诺或违禁品类"，错误代价是"误下架造成商家损失与流量损失，漏放造成监管风险"。三层问完，需求变成了一句可执行的话：在误下架率不超过百分之二的前提下，识别三类明确违规，其余情形只提示不下架。</p>
+<p>接下来划不可自动化清单。涉及处罚决定的最终定性不进系统，保留人工；涉及新品类是否属于违禁的边界判断不进系统，因为规则尚未明确；涉及商家历史违规累积的判定不进系统，因为需要结合多份材料。三项划出之后，系统的边界清楚了，审核员也知道自己仍然要做什么。</p>
+<p>MVP被定义为一个可验证的假设：在三类明确违规上，模型的召回率能达到可用水平，且误下架率在百分之二以内。实验只用了五千条历史标题、两名审核员和一个不做界面的批处理脚本。三周后得出结论：绝对化用语的识别可用，虚假承诺的召回偏低，违禁品类受限于词表更新滞后。</p>
+<p>这个结论直接改变了范围。第二版只做绝对化用语与违禁品类提示，虚假承诺暂时转人工，并把词表更新机制列为交付物之一。如果不做MVP，项目会按原需求开发一个"全类别识别"系统，六个月后交付一个哪一类都不够准的产品。</p>
+<p>变更控制在这个项目里也发挥了作用。上线一个月后，运营提出增加"促销话术合规"的识别，理由是快到促销季。这是一次蔓延性变更，没有新证据，只是"顺便也做"。变更会议要求运营说明用哪项现有范围来换，运营选择暂缓违禁品类的扩充，把资源转到促销话术。交换之后，范围没有膨胀，优先级反而更清楚。</p>
+<p>这个例子说明，需求管理的核心不是把文档写长，而是把判断标准、边界与例外写清。写清之后，漂移仍然会发生，但每一次漂移都有参照，可以被讨论、被交换、被拒绝。</p>
+        </div>
+        <div class="ha-footer-nav">
+          <a href="ch04.html">← 上一页</a>
+          <a href="ch06.html">下一页 →</a>
+        </div>
+      </article>
+    </div>
+  </div>
+  
+<script>
+(function () {
+  var list = document.querySelector(".ha-chapters");
+  if (!list) return;
+  list.addEventListener("click", function (e) {
+    var btn = e.target.closest(".chap-toggle");
+    if (!btn || !list.contains(btn)) return;
+    var li = btn.closest("li[data-chap]");
+    if (!li) return;
+    var willOpen = !li.classList.contains("open");
+    list.querySelectorAll("li[data-chap]").forEach(function (item) {
+      item.classList.remove("open");
+      var b = item.querySelector(".chap-toggle");
+      if (b) b.setAttribute("aria-expanded", "false");
+    });
+    if (willOpen) {
+      li.classList.add("open");
+      btn.setAttribute("aria-expanded", "true");
+      // 第一次展开时进入该章正文；已在本章则只展开小节
+      var href = li.getAttribute("data-chap");
+      var file = (location.pathname.split("/").pop() || "");
+      if (href && file !== href && !file.endsWith("/" + href)) {
+        location.href = href;
+      }
+    }
+  });
+})();
+</script>
+
+</body>
+</html>
