@@ -46,11 +46,13 @@
 
 | 入口 | 说明 |
 |------|------|
-| [`cover.html`](cover.html) | 封面页 |
+| [`cover.html`](cover.html) | 封面页（含在线阅读二维码） |
 | [`index.html`](index.html) | 总目录 |
 | [`ch00.html`](ch00.html) | 前言 |
 | [`ch01.html`](ch01.html) ~ [`ch10.html`](ch10.html) | 各章正文 |
 | [`appendix.html`](appendix.html) | 附录 |
+
+封面右下角二维码可扫码直达 https://cltf.github.io/PMOInAINative/ 。
 
 建议从 [`index.html`](index.html) 进入。左侧目录支持点击章节展开小节，其他章节自动收起；章内正文支持首行缩进阅读。
 
@@ -94,7 +96,8 @@ python3 _convert_docx.py
 | 文件 / 目录 | 用途 |
 |-------------|------|
 | `AI 组织中项目管理升级.docx` | Word 源稿 |
-| `images/cover.jpg` / `cover.png` | 封面图 |
+| `images/cover.jpg` / `cover.png` | 封面图（右下角含在线阅读二维码） |
+| `images/qr-site.png` | 站点二维码原图 |
 | `cover.html` | 封面页 |
 | `index.html` | 总目录 |
 | `ch00.html` ~ `ch10.html` | 前言与各章 HTML |
